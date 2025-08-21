@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "966508359821",
+    "firebase_url": "https://react-cart-2bba4-default-rtdb.firebaseio.com",
+    "project_id": "react-cart-2bba4",
+    "storage_bucket": "react-cart-2bba4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:966508359821:android:879e670a00505c937172c4",
+        "android_client_info": {
+          "package_name": "com.example.recipeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8uJ-IeGVqtYgec63WfBsMNX8FgEMKtjc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
