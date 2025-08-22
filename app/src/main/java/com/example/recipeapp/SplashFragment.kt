@@ -1,16 +1,15 @@
 package com.example.recipeapp
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.airbnb.lottie.LottieAnimationView
 import com.google.firebase.auth.FirebaseAuth
 
 class SplashFragment : Fragment() {
@@ -25,20 +24,20 @@ class SplashFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val logo = view.findViewById<ImageView>(R.id.logoImage)
-        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
-        logo.startAnimation(animation)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            if (currentUser != null) {
-                val intent = Intent(requireContext(), RecipeActivity::class.java)
-                startActivity(intent)
-                requireActivity().finish()
-            } else {
-                findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+        val lottieSplash = view.findViewById<LottieAnimationView>(R.id.lottieSplash)
+        
+        lottieSplash.addAnimatorListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                    val currentUser = FirebaseAuth.getInstance().currentUser
+                    if (currentUser != null) {
+                        startActivity(Intent(requireContext(), RecipeActivity::class.java))
+                        requireActivity().finish()
+                    } else {
+                        findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+                    }
             }
-        }, 3000)
+        })
     }
-
 }
+
+
