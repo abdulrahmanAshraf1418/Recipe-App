@@ -3,6 +3,6 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/recipe" />
+            android:src="@raw/recipe_book" />
     </item>
 </layer-list>
