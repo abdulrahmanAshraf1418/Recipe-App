@@ -21,7 +21,6 @@ import com.example.recipeapp.viewmodel.MealViewModelFactory
 
 class HomeFragment : Fragment() {
 
-    private lateinit var viewModel: MealViewModel
     private lateinit var randomMealImage: ImageView
     private lateinit var randomMealName: TextView
     private lateinit var randomMealCategory: TextView
@@ -39,27 +38,23 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Init Views
         randomMealImage = view.findViewById(R.id.randomMealImage)
         randomMealName = view.findViewById(R.id.randomMealName)
         randomMealCategory = view.findViewById(R.id.randomMealCategory)
         randomMealArea = view.findViewById(R.id.randomMealArea)
         recyclerView = view.findViewById(R.id.recyclerViewMeals)
 
-        // Adapter + RecyclerView
         mealsAdapter = MealsAdapter()
         recyclerView.apply {
             adapter = mealsAdapter
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         }
 
-        // ViewModel
         val remoteDataSource: MealRemoteDataSource = MealRemoteDataSourceImpl(RetrofitInstance.api)
         val repository = MealRepository(remoteDataSource)
         val factory = MealViewModelFactory(repository)
         val viewModel = ViewModelProvider(this, factory).get(MealViewModel::class.java)
 
-        // Observe Random Meal
         viewModel.randomMealLiveData.observe(viewLifecycleOwner) { meal ->
             randomMealName.text = meal.strMeal
             randomMealCategory.text = "Category: ${meal.strCategory}"
@@ -67,12 +62,10 @@ class HomeFragment : Fragment() {
             Glide.with(this).load(meal.strMealThumb).into(randomMealImage)
         }
 
-        // Observe Meals List
         viewModel.mealsByLetterLiveData.observe(viewLifecycleOwner) { meals ->
             mealsAdapter.setMeals(meals)
         }
 
-        // Call API
         viewModel.getRandomMeal()
         val randomLetter = getRandomLetter()
         viewModel.getMealsByLetter(randomLetter)
