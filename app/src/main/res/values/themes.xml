@@ -1,14 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.RecipeApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <!-- Base Theme -->
+    <style name="Base.Theme.RecipeApp" parent="Theme.Material3.DayNight.NoActionBar" />
+
+    <!-- Splash Theme -->
+    <style name="Theme.RecipeApp.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
-    <style name="Theme.RecipeApp" parent="Base.Theme.RecipeApp" />
+    <!-- App Theme -->
+    <style name="Theme.RecipeApp" parent="Base.Theme.RecipeApp">
+        <item name="colorPrimary">@color/primaryRed</item>
+        <item name="colorPrimaryVariant">@color/primaryRed</item>
+        <item name="colorOnPrimary">@android:color/white</item>
 
-    <style name="Theme.RecipeApp.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="toolbarStyle">@style/CustomToolbar</item>
+        <item name="bottomNavigationStyle">@style/CustomBottomNav</item>
     </style>
 
 </resources>

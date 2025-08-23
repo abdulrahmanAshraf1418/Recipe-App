@@ -1,0 +1,28 @@
+<resources>
+    <style name="CustomToolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:background">@color/primaryRed</item>
+        <item name="titleTextColor">@android:color/white</item>
+        <item name="subtitleTextColor">@android:color/white</item>
+        <item name="navigationIconTint">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="actionButtonStyle">@style/CustomActionButton</item>
+    </style>
+
+    <style name="CustomActionButton" parent="Widget.AppCompat.ActionButton">
+        <item name="android:maxWidth">32dp</item>
+    </style>
+
+    <style name="ToolbarIconTheme" parent="ThemeOverlay.MaterialComponents.ActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="android:colorControlNormal">@android:color/white</item>
+    </style>
+
+    <style name="CustomBottomNav" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/primaryRed</item>
+        <item name="itemIconTint">@color/bottom_nav_item_colors</item>
+        <item name="itemTextColor">@color/bottom_nav_item_colors</item>
+        <item name="itemIconSize">28dp</item>
+    </style>
+</resources>
