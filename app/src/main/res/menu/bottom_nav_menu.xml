@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/home_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Home" />
+    <item
+        android:id="@+id/favoritesFragment"
+        android:icon="@drawable/favorite_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Favorites" />
+    <item
+        android:id="@+id/searchFragment"
+        android:icon="@drawable/search_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Search" />
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/person_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Profile" />
+</menu>
