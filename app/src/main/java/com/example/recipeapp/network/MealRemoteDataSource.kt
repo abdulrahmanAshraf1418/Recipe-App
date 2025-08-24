@@ -4,6 +4,6 @@ import com.example.recipeapp.models.MealResponse
 import retrofit2.Call
 
 interface MealRemoteDataSource {
-    fun getRandomMeal(): Call<MealResponse>
-    fun getMealsByFirstLetter(letter: String): Call<MealResponse>
+    suspend fun getRandomMeal(): MealResponse
+    suspend fun getMealsByFirstLetter(letter: String): MealResponse
 }
