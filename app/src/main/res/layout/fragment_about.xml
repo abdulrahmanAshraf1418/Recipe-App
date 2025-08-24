@@ -1,22 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.AboutFragment">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
 
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:src="@mipmap/recipe_logo"
+        android:contentDescription="App Logo"
+        android:layout_marginBottom="16dp"/>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tvAboutTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="About Fragment"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="About Recipe App"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvAboutDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recipe App helps you discover delicious meals easily. Search, explore and save your favorite recipes!"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:lineSpacingExtra="4dp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version 1.0"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/btnContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/primaryColor"
+        android:text="Contact Us"
+        android:textColor="@android:color/white"/>
+</LinearLayout>
