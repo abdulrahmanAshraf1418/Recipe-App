@@ -1,10 +1,17 @@
 package com.example.recipeapp.repository
 
+import com.example.recipeapp.models.Meal
 import com.example.recipeapp.network.MealRemoteDataSource
 
 class MealRepository(private val remoteDataSource: MealRemoteDataSource) {
 
-    fun getRandomMeal() = remoteDataSource.getRandomMeal()
+    suspend fun getRandomMeal(): Meal? {
+        return remoteDataSource.getRandomMeal().meals?.firstOrNull()
+    }
 
-    fun getMealsByFirstLetter(letter: String) = remoteDataSource.getMealsByFirstLetter(letter)
+    suspend fun getMealsByFirstLetter(letter: String): List<Meal> {
+        return (remoteDataSource.getMealsByFirstLetter(letter).meals ?: emptyList()) as List<Meal>
+    }
+
 }
+
