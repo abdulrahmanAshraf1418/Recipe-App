@@ -15,7 +15,27 @@
         android:id="@+id/searchFragment"
         android:name="com.example.recipeapp.ui.SearchFragment"
         android:label="Search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_searchFragment_to_mealsFragment"
+            app:destination="@id/mealsFragment"
+            app:popUpTo="@id/searchFragment"
+            app:popUpToInclusive="false"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/mealsFragment"
+        android:name="com.example.recipeapp.ui.MealsFragment"
+        android:label="Meals"
+        tools:layout="@layout/fragment_meals">
+
+        <argument
+            android:name="filterType"
+            app:argType="string" />
+        <argument
+            android:name="filterValue"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
