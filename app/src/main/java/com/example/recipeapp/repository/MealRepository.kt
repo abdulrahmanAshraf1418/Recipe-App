@@ -21,6 +21,9 @@ class MealRepository(
         return (remoteDataSource.getMealsByFirstLetter(letter).meals ?: emptyList()) as List<Meal>
     }
 
+    suspend fun getMealById (id: String): Meal?{
+        return (remoteDataSource.getMealById(id).meals?.firstOrNull())
+    }
     suspend fun searchMealsByName(name: String): List<Meal> {
         return (remoteDataSource.searchMealsByName(name).meals ?: emptyList()) as List<Meal>
     }
