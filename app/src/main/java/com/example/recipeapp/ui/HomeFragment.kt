@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -81,7 +80,6 @@ class HomeFragment : Fragment() {
         val randomLetter = getRandomLetter()
         viewModel.getMealsByLetter(randomLetter)
     }
-
     private fun getRandomLetter(): String {
         val letters = ('a'..'z').filterNot { it in listOf('q', 'x', 'u', 'z') }
         return letters.random().toString()

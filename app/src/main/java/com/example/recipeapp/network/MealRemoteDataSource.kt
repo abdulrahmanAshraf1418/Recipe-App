@@ -5,7 +5,6 @@ import com.example.recipeapp.models.CategoriesResponse
 import com.example.recipeapp.models.IngredientsResponse
 import com.example.recipeapp.models.MealItemResponse
 import com.example.recipeapp.models.MealResponse
-import retrofit2.Call
 
 interface MealRemoteDataSource {
     suspend fun getRandomMeal(): MealResponse
