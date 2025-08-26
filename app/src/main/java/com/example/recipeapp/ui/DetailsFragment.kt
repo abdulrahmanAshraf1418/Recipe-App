@@ -42,6 +42,7 @@ class DetailsFragment : Fragment() {
     private lateinit var YoutubeLabel : TextView
     private var isExpanded = false
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -82,6 +83,7 @@ class DetailsFragment : Fragment() {
         YoutubeLabel = view.findViewById(R.id.youtube_label)
         youTubePlayerView = view.findViewById(R.id.youtube_player_view)
         recyclerView = view.findViewById(R.id.recyclerViewIngredients)
+
     }
 
     private fun setupRecyclerView() {
@@ -92,7 +94,6 @@ class DetailsFragment : Fragment() {
         )
         recyclerView.adapter = IngredientAdapter(emptyList())
     }
-
     private fun observeViewModel() {
         val mealId = arguments?.getString("mealId")
         if (mealId.isNullOrEmpty()) {

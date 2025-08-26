@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
     alias(libs.plugins.kotlin.kapt)
+
 }
 
 android {

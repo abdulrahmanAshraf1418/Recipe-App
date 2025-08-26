@@ -22,6 +22,8 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
     val messageLiveData: LiveData<String> = _messageLiveData
 
 
+    val mealByIdLiveData = MutableLiveData<Meal>()
+
     val categoriesLiveData = MutableLiveData<List<String>>()
     val areasLiveData = MutableLiveData<List<String>>()
     val ingredientsLiveData = MutableLiveData<List<String>>()
@@ -82,6 +84,16 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
     fun fetchMealsByIngredient(ingredient: String) = viewModelScope.launch {
         mealsLiveData.postValue(repository.getMealsByIngredient(ingredient))
     }
+
+    fun getMealById (id: String){
+        viewModelScope.launch {
+            val meal = repository.getMealById(id)
+            meal?.let {
+                mealByIdLiveData.postValue(it)
+            }
+        }
+    }
+
 }
 
     fun getMealById(id: String) {
