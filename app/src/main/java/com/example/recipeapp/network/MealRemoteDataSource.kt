@@ -9,6 +9,7 @@ import com.example.recipeapp.models.MealResponse
 interface MealRemoteDataSource {
     suspend fun getRandomMeal(): MealResponse
     suspend fun getMealsByFirstLetter(letter: String): MealResponse
+    suspend fun getMealById (id: String): MealResponse
     suspend fun searchMealsByName(name: String): MealResponse
     suspend fun getCategories(): CategoriesResponse
     suspend fun getAreas(): AreasResponse
