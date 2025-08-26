@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,13 +40,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        randomMealImage = view.findViewById(R.id.randomMealImage)
-        randomMealName = view.findViewById(R.id.randomMealName)
-        randomMealCategory = view.findViewById(R.id.randomMealCategory)
-        randomMealArea = view.findViewById(R.id.randomMealArea)
+        randomMealImage = view.findViewById(R.id.meal_image)
+        randomMealName = view.findViewById(R.id.MealName)
+        randomMealCategory = view.findViewById(R.id.MealCategory)
+        randomMealArea = view.findViewById(R.id.MealArea)
         recyclerView = view.findViewById(R.id.recyclerViewMeals)
 
-        mealsAdapter = MealsAdapter()
+        mealsAdapter = MealsAdapter { mealId ->
+            val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(mealId)
+            findNavController().navigate(action)
+        }
         recyclerView.apply {
             adapter = mealsAdapter
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -61,6 +65,11 @@ class HomeFragment : Fragment() {
             randomMealCategory.text = "Category: ${meal.strCategory}"
             randomMealArea.text = "Area: ${meal.strArea}"
             Glide.with(this).load(meal.strMealThumb).into(randomMealImage)
+
+            view.findViewById<View>(R.id.meal_image).setOnClickListener {
+                val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(meal.idMeal)
+                findNavController().navigate(action)
+            }
         }
 
         viewModel.mealsByLetterLiveData.observe(viewLifecycleOwner) { meals ->

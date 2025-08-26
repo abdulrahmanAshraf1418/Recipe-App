@@ -6,11 +6,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.example.recipeapp.R
 import android.widget.TextView
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.recipeapp.models.Meal
 
-class MealsAdapter : RecyclerView.Adapter<MealsAdapter.MealViewHolder>() {
+class MealsAdapter (
+    private val onMealClick: (mealId: String?) -> Unit
+) : RecyclerView.Adapter<MealsAdapter.MealViewHolder>() {
 
     private var meals = ArrayList<Meal>()
 
@@ -23,7 +26,9 @@ class MealsAdapter : RecyclerView.Adapter<MealsAdapter.MealViewHolder>() {
         val mealName: TextView = itemView.findViewById(R.id.mealName)
         val mealCategory: TextView = itemView.findViewById(R.id.mealCategory)
         val mealArea: TextView = itemView.findViewById(R.id.mealArea)
-        val mealImage: ImageView = itemView.findViewById(R.id.mealImage)
+        val mealImage: ImageView = itemView.findViewById(R.id.ingredientImage)
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MealViewHolder {
@@ -37,6 +42,11 @@ class MealsAdapter : RecyclerView.Adapter<MealsAdapter.MealViewHolder>() {
         holder.mealCategory.text = "Category: ${meal.strCategory}"
         holder.mealArea.text = "Area: ${meal.strArea}"
         Glide.with(holder.itemView).load(meal.strMealThumb).into(holder.mealImage)
+
+        holder.itemView.setOnClickListener {
+            onMealClick(meal.idMeal)
+        }
+
     }
 
     override fun getItemCount() = meals.size

@@ -17,6 +17,7 @@
         android:textColor="@color/primaryColor" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/mealCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -30,48 +31,48 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/randomMealImage"
+                android:id="@+id/meal_image"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:scaleType="centerCrop" />
 
             <TextView
-                android:id="@+id/randomMealName"
+                android:id="@+id/MealName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="Meal Name"
                 android:ellipsize="end"
+                android:padding="8dp"
                 android:singleLine="true"
+                android:text="Meal Name"
                 android:textColor="@color/primaryColorDark"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="2"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:weightSum="2">
 
                 <TextView
-                    android:id="@+id/randomMealCategory"
+                    android:id="@+id/MealCategory"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Category:"
-                    android:textSize="14sp"
-                    android:textColor="@color/primaryColorDark"/>
+                    android:textColor="@color/primaryColorDark"
+                    android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/randomMealArea"
+                    android:id="@+id/MealArea"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:gravity="end"
                     android:text="Area:"
-                    android:textSize="14sp"
                     android:textColor="@color/primaryColorDark"
-                    android:gravity="end"/>
+                    android:textSize="14sp" />
 
             </LinearLayout>
         </LinearLayout>

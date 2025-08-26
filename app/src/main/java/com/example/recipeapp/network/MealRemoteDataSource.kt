@@ -5,10 +5,12 @@ import com.example.recipeapp.models.CategoriesResponse
 import com.example.recipeapp.models.IngredientsResponse
 import com.example.recipeapp.models.MealItemResponse
 import com.example.recipeapp.models.MealResponse
+import retrofit2.Call
 
 interface MealRemoteDataSource {
     suspend fun getRandomMeal(): MealResponse
     suspend fun getMealsByFirstLetter(letter: String): MealResponse
+    suspend fun getMealById (id: String): MealResponse
     suspend fun searchMealsByName(name: String): MealResponse
     suspend fun getCategories(): CategoriesResponse
     suspend fun getAreas(): AreasResponse
