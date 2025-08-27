@@ -22,6 +22,20 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
     val messageLiveData: LiveData<String> = _messageLiveData
 
 
+    val categoriesLiveData = MutableLiveData<List<String>>()
+    val areasLiveData = MutableLiveData<List<String>>()
+    val ingredientsLiveData = MutableLiveData<List<String>>()
+
+    val mealsLiveData = MutableLiveData<List<MealItem>>()
+    val mealsByNameLiveData = MutableLiveData<List<Meal>>()
+
+    private val _selectedType = MutableLiveData<String>()
+    val selectedType: LiveData<String> get() = _selectedType
+
+    fun setSelectedType(type: String) {
+        _selectedType.value = type
+    }
+
     val mealByIdLiveData = MutableLiveData<Meal>()
 
     val categoriesLiveData = MutableLiveData<List<String>>()
