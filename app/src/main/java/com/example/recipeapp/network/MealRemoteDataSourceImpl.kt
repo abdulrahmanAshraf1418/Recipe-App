@@ -3,6 +3,13 @@ package com.example.recipeapp.network
 class MealRemoteDataSourceImpl(private val api: MealApi) : MealRemoteDataSource {
     override suspend fun getRandomMeal() = api.getRandomMeal()
     override suspend fun getMealsByFirstLetter(letter: String) = api.getMealsByFirstLetter(letter)
+    override suspend fun searchMealsByName(name: String) = api.searchMealsByName(name)
+    override suspend fun getCategories() = api.getCategories()
+    override suspend fun getAreas() = api.getAreas()
+    override suspend fun getIngredients() = api.getIngredients()
+    override suspend fun filterByCategory(category: String) = api.filterByCategory(category)
+    override suspend fun filterByArea(area: String) = api.filterByArea(area)
+    override suspend fun filterByIngredient(ingredient: String) = api.filterByIngredient(ingredient)
     override suspend fun getMealById (id: String) = api.getMealById(id)
     override suspend fun searchMealsByName(name: String) = api.searchMealsByName(name)
     override suspend fun getCategories() = api.getCategories()

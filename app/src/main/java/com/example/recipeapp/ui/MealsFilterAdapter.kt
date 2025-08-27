@@ -49,3 +49,4 @@ class MealsFilterAdapter(
 
     override fun getItemCount() = meals.size
 }
+

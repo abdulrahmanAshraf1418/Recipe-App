@@ -52,6 +52,38 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
         }
     }
 
+    fun searchMeals(name: String) {
+        viewModelScope.launch {
+            val meals = repository.searchMealsByName(name)
+            mealsByNameLiveData.postValue(meals)
+        }
+    }
+
+    fun fetchCategories() = viewModelScope.launch {
+        categoriesLiveData.postValue(repository.listCategories())
+    }
+
+    fun fetchAreas() = viewModelScope.launch {
+        areasLiveData.postValue(repository.listAreas())
+    }
+
+    fun fetchIngredients() = viewModelScope.launch {
+        ingredientsLiveData.postValue(repository.listIngredients())
+    }
+
+    fun fetchMealsByCategory(category: String) = viewModelScope.launch {
+        mealsLiveData.postValue(repository.getMealsByCategory(category))
+    }
+
+    fun fetchMealsByArea(area: String) = viewModelScope.launch {
+        mealsLiveData.postValue(repository.getMealsByArea(area))
+    }
+
+    fun fetchMealsByIngredient(ingredient: String) = viewModelScope.launch {
+        mealsLiveData.postValue(repository.getMealsByIngredient(ingredient))
+    }
+}
+
     fun getMealById(id: String) {
         viewModelScope.launch {
             val meal = repository.getMealById(id)

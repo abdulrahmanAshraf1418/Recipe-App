@@ -17,6 +17,30 @@ interface MealApi {
         @Query("f") letter: String
     ): MealResponse
 
+    @GET("search.php")
+    suspend fun searchMealsByName(
+        @Query("s") name: String
+    ): MealResponse
+
+
+    @GET("list.php")
+    suspend fun getCategories(@Query("c") list: String = "list"): CategoriesResponse
+
+    @GET("list.php")
+    suspend fun getAreas(@Query("a") list: String = "list"): AreasResponse
+
+    @GET("list.php")
+    suspend fun getIngredients(@Query("i") list: String = "list"): IngredientsResponse
+
+    @GET("filter.php")
+    suspend fun filterByCategory(@Query("c") category: String): MealItemResponse
+
+    @GET("filter.php")
+    suspend fun filterByArea(@Query("a") area: String): MealItemResponse
+
+    @GET("filter.php")
+    suspend fun filterByIngredient(@Query("i") ingredient: String): MealItemResponse
+
     @GET ("lookup.php")
     suspend fun getMealById (
         @Query("i") id: String
