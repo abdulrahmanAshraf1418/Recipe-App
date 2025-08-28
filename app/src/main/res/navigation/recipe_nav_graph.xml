@@ -25,6 +25,9 @@
             app:destination="@id/mealsFragment"
             app:popUpTo="@id/searchFragment"
             app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_searchFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
     </fragment>
 
     <fragment
@@ -39,6 +42,9 @@
         <argument
             android:name="filterValue"
             app:argType="string" />
+        <action
+            android:id="@+id/action_mealsFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
     </fragment>
 
     <fragment
