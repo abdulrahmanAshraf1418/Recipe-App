@@ -38,22 +38,6 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
         _selectedType.value = type
     }
 
-    val mealByIdLiveData = MutableLiveData<Meal>()
-
-    val categoriesLiveData = MutableLiveData<List<String>>()
-    val areasLiveData = MutableLiveData<List<String>>()
-    val ingredientsLiveData = MutableLiveData<List<String>>()
-
-    val mealsLiveData = MutableLiveData<List<MealItem>>()
-    val mealsByNameLiveData = MutableLiveData<List<Meal>>()
-
-    private val _selectedType = MutableLiveData<String>()
-    val selectedType: LiveData<String> get() = _selectedType
-
-    fun setSelectedType(type: String) {
-        _selectedType.value = type
-    }
-
     fun getRandomMeal() {
         viewModelScope.launch {
             val meal = repository.getRandomMeal()
@@ -109,15 +93,6 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
 
     fun fetchMealsByIngredient(ingredient: String) = viewModelScope.launch {
         mealsLiveData.postValue(repository.getMealsByIngredient(ingredient))
-    }
-
-    fun getMealById (id: String){
-        viewModelScope.launch {
-            val meal = repository.getMealById(id)
-            meal?.let {
-                mealByIdLiveData.postValue(it)
-            }
-        }
     }
 
 }
