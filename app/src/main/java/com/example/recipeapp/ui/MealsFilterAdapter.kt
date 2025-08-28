@@ -10,7 +10,9 @@ import com.bumptech.glide.Glide
 import com.example.recipeapp.R
 import com.example.recipeapp.models.MealItem
 
-class MealsFilterAdapter : RecyclerView.Adapter<MealsFilterAdapter.MealFilterViewHolder>() {
+class MealsFilterAdapter(
+    private val onClick: (MealItem) -> Unit   // 👈 هنا ضفنا callback
+) : RecyclerView.Adapter<MealsFilterAdapter.MealFilterViewHolder>() {
 
     private var meals = ArrayList<MealItem>()
 
@@ -22,6 +24,17 @@ class MealsFilterAdapter : RecyclerView.Adapter<MealsFilterAdapter.MealFilterVie
     inner class MealFilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mealName: TextView = itemView.findViewById(R.id.mealName)
         val mealImage: ImageView = itemView.findViewById(R.id.mealImage)
+
+        fun bind(meal: MealItem) {
+            mealName.text = meal.strMeal
+            Glide.with(itemView)
+                .load(meal.strMealThumb)
+                .into(mealImage)
+
+            itemView.setOnClickListener {
+                onClick(meal)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MealFilterViewHolder {
@@ -31,13 +44,8 @@ class MealsFilterAdapter : RecyclerView.Adapter<MealsFilterAdapter.MealFilterVie
     }
 
     override fun onBindViewHolder(holder: MealFilterViewHolder, position: Int) {
-        val meal = meals[position]
-        holder.mealName.text = meal.strMeal
-        Glide.with(holder.itemView)
-            .load(meal.strMealThumb)
-            .into(holder.mealImage)
+        holder.bind(meals[position])
     }
 
     override fun getItemCount() = meals.size
 }
-
