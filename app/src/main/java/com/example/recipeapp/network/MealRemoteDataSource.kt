@@ -18,5 +18,4 @@ interface MealRemoteDataSource {
     suspend fun filterByCategory(category: String): MealItemResponse
     suspend fun filterByArea(area: String): MealItemResponse
     suspend fun filterByIngredient(ingredient: String): MealItemResponse
-    suspend fun getMealById (id: String): MealResponse
 }
