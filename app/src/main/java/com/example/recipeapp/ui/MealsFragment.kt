@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recipeapp.R
+import com.example.recipeapp.datdbase.LocalDataSourceImpl
 import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
@@ -32,7 +33,7 @@ class MealsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val repo = MealRepository(MealRemoteDataSourceImpl(RetrofitInstance.api))
+        val repo = MealRepository(MealRemoteDataSourceImpl(RetrofitInstance.api),LocalDataSourceImpl(requireContext()))
         viewModel = ViewModelProvider(this, MealViewModelFactory(repo))[MealViewModel::class.java]
 
         recycler = view.findViewById(R.id.recyclerViewMeals)

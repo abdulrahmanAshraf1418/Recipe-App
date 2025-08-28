@@ -18,7 +18,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.example.recipeapp.R
+import com.example.recipeapp.datdbase.LocalDataSourceImpl
 import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
@@ -35,6 +37,7 @@ class SearchFragment : Fragment() {
     private lateinit var editSearch: EditText
     private lateinit var progressBar: ProgressBar
     private lateinit var tvNoResults: TextView
+    private lateinit var offlineAnimation: LottieAnimationView
 
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
@@ -52,13 +55,28 @@ class SearchFragment : Fragment() {
         val btnSearch = view.findViewById<ImageView>(R.id.btnSearch)
         progressBar = view.findViewById(R.id.progressBar)
         tvNoResults = view.findViewById(R.id.tvNoResults)
-
-        val repo = MealRepository(MealRemoteDataSourceImpl(RetrofitInstance.api))
-        viewModel = ViewModelProvider(this, MealViewModelFactory(repo))[MealViewModel::class.java]
-
         recycler = view.findViewById(R.id.recyclerView)
         radioGroup = view.findViewById(R.id.radioGroup)
+        offlineAnimation = view.findViewById(R.id.offlineAnimationSearch)
 
+        val repo = MealRepository(
+            MealRemoteDataSourceImpl(RetrofitInstance.api),
+            LocalDataSourceImpl(requireContext())
+        )
+        viewModel = ViewModelProvider(this, MealViewModelFactory(repo))[MealViewModel::class.java]
+
+        if (isNetworkAvailable()) {
+            setViewsVisibility(true)
+            offlineAnimation.cancelAnimation()
+            offlineAnimation.visibility = View.GONE
+            setupSearchLogic(btnSearch)
+        } else {
+            setViewsVisibility(false)
+            showOfflineAnimation()
+        }
+    }
+
+    private fun setupSearchLogic(btnSearch: ImageView) {
         simpleAdapter = SimpleListAdapter { value ->
             val type = viewModel.selectedType.value ?: "Category"
             val action = SearchFragmentDirections
@@ -150,7 +168,6 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
-
             handler.postDelayed(searchRunnable!!, 500)
         }
 
@@ -193,8 +210,29 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = requireContext()
+            .getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun showOfflineAnimation() {
+        offlineAnimation.visibility = View.VISIBLE
+        offlineAnimation.playAnimation()
+    }
+
+    private fun setViewsVisibility(isVisible: Boolean) {
+        val visibility = if (isVisible) View.VISIBLE else View.GONE
+        listOf(recycler, radioGroup, editSearch, progressBar, tvNoResults).forEach {
+            it.visibility = visibility
+        }
+    }
+
     private fun hideKeyboard() {
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(editSearch.windowToken, 0)
     }
 }

@@ -2,10 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#F9F9F9">
+    android:background="#F4E1E1">
 
+    <!-- 🔍 Search Box -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +38,7 @@
             android:background="@drawable/bg_icon_circle" />
     </LinearLayout>
 
+    <!-- 🔘 Radio Group -->
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"
@@ -69,6 +72,7 @@
             android:buttonTint="@color/primaryColor" />
     </RadioGroup>
 
+    <!-- 📦 Content Area -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -103,6 +107,17 @@
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
             android:textColor="@android:color/darker_gray"/>
+
+        <!-- 📴 Offline Animation -->
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/offlineAnimationSearch"
+            android:layout_width="365dp"
+            android:layout_height="588dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/offline" />
 
     </FrameLayout>
 

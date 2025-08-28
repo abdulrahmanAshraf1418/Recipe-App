@@ -68,8 +68,7 @@ class HomeFragment : Fragment() {
         }
 
         val remoteDataSource: MealRemoteDataSource = MealRemoteDataSourceImpl(RetrofitInstance.api)
-        val localDataSource = LocalDataSourceImpl(requireContext())
-        val repository = MealRepository(remoteDataSource, localDataSource)
+        val repository = MealRepository(remoteDataSource, LocalDataSourceImpl(requireContext()))
         val factory = MealViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory).get(MealViewModel::class.java)
 

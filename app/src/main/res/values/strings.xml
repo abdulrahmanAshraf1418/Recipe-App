@@ -12,9 +12,4 @@
     <string name="read_less">Read Less</string>
     <string name="area_label">Area: %1$s</string>
     <string name="category_label">Category: %1$s</string>
-    <string-array name="search_types">
-        <item>Ingredient</item>
-        <item>Category</item>
-        <item>Area</item>
-    </string-array>
 </resources>
