@@ -18,16 +18,11 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
     private var _allLocalMealsLiveData: LiveData<List<Meal>>? = null
     val allLocalMealsLiveData = MutableLiveData<List<Meal>>()
     private val _messageLiveData = MutableLiveData<String>()
-
     val messageLiveData: LiveData<String> = _messageLiveData
-
-
-    val mealByIdLiveData = MutableLiveData<Meal>()
 
     val categoriesLiveData = MutableLiveData<List<String>>()
     val areasLiveData = MutableLiveData<List<String>>()
     val ingredientsLiveData = MutableLiveData<List<String>>()
-
     val mealsLiveData = MutableLiveData<List<MealItem>>()
     val mealsByNameLiveData = MutableLiveData<List<Meal>>()
 
@@ -54,49 +49,6 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
         }
     }
 
-    fun getMealById (id: String){
-        viewModelScope.launch {
-            val meal = repository.getMealById(id)
-            meal?.let {
-                mealByIdLiveData.postValue(it)
-            }
-        }
-    }
-
-
-    fun searchMeals(name: String) {
-        viewModelScope.launch {
-            val meals = repository.searchMealsByName(name)
-            mealsByNameLiveData.postValue(meals)
-        }
-    }
-
-    fun fetchCategories() = viewModelScope.launch {
-        categoriesLiveData.postValue(repository.listCategories())
-    }
-
-    fun fetchAreas() = viewModelScope.launch {
-        areasLiveData.postValue(repository.listAreas())
-    }
-
-    fun fetchIngredients() = viewModelScope.launch {
-        ingredientsLiveData.postValue(repository.listIngredients())
-    }
-
-    fun fetchMealsByCategory(category: String) = viewModelScope.launch {
-        mealsLiveData.postValue(repository.getMealsByCategory(category))
-    }
-
-    fun fetchMealsByArea(area: String) = viewModelScope.launch {
-        mealsLiveData.postValue(repository.getMealsByArea(area))
-    }
-
-    fun fetchMealsByIngredient(ingredient: String) = viewModelScope.launch {
-        mealsLiveData.postValue(repository.getMealsByIngredient(ingredient))
-    }
-
-}
-
     fun getMealById(id: String) {
         viewModelScope.launch {
             val meal = repository.getMealById(id)
@@ -110,7 +62,6 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
         }
     }
 
-
     fun searchMeals(name: String) {
         viewModelScope.launch {
             val meals = repository.searchMealsByName(name)
@@ -142,7 +93,6 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
         mealsLiveData.postValue(repository.getMealsByIngredient(ingredient))
     }
 
-}
     fun getAllLocalMeals() {
         viewModelScope.launch {
             if (_allLocalMealsLiveData == null) {
@@ -174,7 +124,6 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
                 repository.deleteMeal(savedMeal)
                 meal.isFavorite = false
                 _messageLiveData.postValue("${meal.strMeal} removed from favorite")
-
             }
         }
     }
@@ -182,9 +131,9 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
     fun getLocalMealById(mealId: String) {
         viewModelScope.launch {
             val meal = repository.getSavedMealById(mealId)
-            localMealByIdLiveData.postValue(meal!!)
+            meal?.let {
+                localMealByIdLiveData.postValue(it)
+            }
         }
     }
-
-
 }
