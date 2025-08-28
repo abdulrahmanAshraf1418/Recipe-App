@@ -6,8 +6,10 @@
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp">
 
+
     <LinearLayout
         android:layout_width="200dp"
+        android:background="#F4E1E1"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
@@ -27,8 +29,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingStart="8dp"
+                android:paddingBottom="4dp"
                 android:text="Ingredient"
-                android:textColor="#B11818" />
+                android:textColor="#B11818"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/Measure"
@@ -36,8 +42,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="right"
+                android:paddingRight="8dp"
+                android:paddingBottom="4dp"
                 android:text="Measure"
-                android:textColor="#B11818" />
+                android:textColor="#B11818"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>

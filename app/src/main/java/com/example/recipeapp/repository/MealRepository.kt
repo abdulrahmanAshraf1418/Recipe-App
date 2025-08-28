@@ -1,10 +1,17 @@
 package com.example.recipeapp.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
+import com.example.recipeapp.datdbase.LocalDataSource
+
 import com.example.recipeapp.models.Meal
 import com.example.recipeapp.models.MealItem
 import com.example.recipeapp.network.MealRemoteDataSource
 
-class MealRepository(private val remoteDataSource: MealRemoteDataSource) {
+class MealRepository(
+    private val remoteDataSource: MealRemoteDataSource,
+    private val localDataSource: LocalDataSource
+) {
 
     suspend fun getRandomMeal(): Meal? {
         return remoteDataSource.getRandomMeal().meals?.firstOrNull()
@@ -14,8 +21,17 @@ class MealRepository(private val remoteDataSource: MealRemoteDataSource) {
         return (remoteDataSource.getMealsByFirstLetter(letter).meals ?: emptyList()) as List<Meal>
     }
 
-    suspend fun getMealById (id: String): Meal?{
-        return (remoteDataSource.getMealById(id).meals?.firstOrNull())
+    suspend fun getMealById(id: String): Meal? {
+        val apiMeal = remoteDataSource.getMealById(id).meals?.firstOrNull()
+
+        apiMeal?.let {
+            val savedMeal = localDataSource.getLocalMealById(id)
+            if (savedMeal != null) {
+                it.isFavorite = true
+            }
+        }
+
+        return apiMeal
     }
     suspend fun searchMealsByName(name: String): List<Meal> {
         return (remoteDataSource.searchMealsByName(name).meals ?: emptyList()) as List<Meal>
@@ -39,6 +55,22 @@ class MealRepository(private val remoteDataSource: MealRemoteDataSource) {
     suspend fun getMealsByIngredient(ingredient: String): List<MealItem> =
         remoteDataSource.filterByIngredient(ingredient).meals ?: emptyList()
 
+
+
+    suspend fun insertMeal(meal: Meal) = localDataSource.insert(meal)
+
+    suspend fun deleteMeal(meal: Meal) = localDataSource.delete(meal)
+
+    suspend fun getAllMeals(): LiveData<List<Meal>> {
+        return localDataSource.listAll().map { meals ->
+            meals.map { meal ->
+                meal.copy(isFavorite = true)
+            }
+        }
+    }
+    suspend fun getSavedMealById(id: String): Meal? {
+        return localDataSource.getLocalMealById(id)
+    }
 
 }
 

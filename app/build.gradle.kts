@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
     alias(libs.plugins.androidx.navigation.safeargs.kotlin)
-
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -39,7 +39,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -60,5 +59,13 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.glide)
     implementation(libs.youtube.player)
+    implementation(libs.room.runtime)
+    implementation(libs.room.compiler)
+    implementation(libs.room.ktx)
+    implementation(libs.swiperefreshlayout)
+    kapt(libs.room.compiler)
+}
 
+configurations.all {
+    exclude(group = "com.intellij", module = "annotations")
 }

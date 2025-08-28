@@ -1,12 +1,15 @@
 package com.example.recipeapp.models
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.example.recipeapp.adapters.FavoriteAdapter
+
+@Entity(tableName = "meals")
 data class Meal(
-    val dateModified: Any?,
-    val idMeal: String?,
+    @PrimaryKey
+    val idMeal: String,
     val strArea: String?,
     val strCategory: String?,
-    val strCreativeCommonsConfirmed: Any?,
-    val strImageSource: Any?,
     val strIngredient1: String?,
     val strIngredient10: String?,
     val strIngredient11: String?,
@@ -29,7 +32,6 @@ data class Meal(
     val strIngredient9: String?,
     val strInstructions: String?,
     val strMeal: String?,
-    val strMealAlternate: Any?,
     val strMealThumb: String?,
     val strMeasure1: String?,
     val strMeasure10: String?,
@@ -53,5 +55,6 @@ data class Meal(
     val strMeasure9: String?,
     val strSource: String?,
     val strTags: String?,
-    val strYoutube: String?
+    val strYoutube: String?,
+    var isFavorite : Boolean = false
 )
