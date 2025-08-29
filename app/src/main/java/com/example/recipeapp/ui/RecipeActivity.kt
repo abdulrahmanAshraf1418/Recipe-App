@@ -18,6 +18,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.recipeapp.R
 import com.example.recipeapp.network.AuthRemoteDataSourceImpl
 import com.example.recipeapp.repository.AuthRepository
+import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.AuthViewModel
 import com.example.recipeapp.viewmodel.AuthViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
@@ -109,25 +110,17 @@ class RecipeActivity : AppCompatActivity() {
     }
 
     private fun showSignOutDialog() {
-        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
-        builder.setTitle("Sign Out")
-        builder.setMessage("Are you sure you want to sign out?")
-
-        builder.setPositiveButton("Yes") { dialog, _ ->
-            viewModel.logout()
-
-            startActivity(Intent(this, AuthActivity::class.java))
-            finish()
-
-            dialog.dismiss()
-        }
-
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        val dialog = builder.create()
-        dialog.show()
+        showConfirmDialog(
+            title = "Sign Out",
+            message = "Are you sure you want to sign out?",
+            positiveText = "Yes",
+            negativeText = "Cancel",
+            onConfirm = {
+                viewModel.logout()
+                startActivity(Intent(this, AuthActivity::class.java))
+                finish()
+            }
+        )
     }
 
 }

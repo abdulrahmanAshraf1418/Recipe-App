@@ -16,6 +16,7 @@ import com.example.recipeapp.datdbase.LocalDataSourceImpl
 import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
+import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -43,19 +44,30 @@ class FavoritesFragment : Fragment() {
                 val action = FavoritesFragmentDirections.actionFavoritesFragmentToDetailsFragment(mealId)
                 findNavController().navigate(action)
                           },
+
             onFavoriteClick = { meal ->
-                viewModel.toggleMeal(meal)
+                requireContext().showConfirmDialog(
+                    title = "Remove Favorite",
+                    message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                    positiveText = "Yes",
+                    negativeText = "Cancel",
+                    onConfirm = {
+                        viewModel.toggleMeal(meal)
+                        meal.isFavorite = false
+                        favAdapter.notifyDataSetChanged()
 
-                meal.isFavorite = !meal.isFavorite
-                favAdapter.notifyDataSetChanged()
-
-                Snackbar.make(requireView(),
-                    if (meal.isFavorite) "Added to favorites" else "Removed from favorites",
-                    Snackbar.LENGTH_SHORT
-                ).show()
+                        Snackbar.make(requireView(),
+                            "${meal.strMeal} removed from favorites",
+                            Snackbar.LENGTH_LONG
+                        ).setAction("Undo") {
+                            viewModel.toggleMeal(meal)
+                            meal.isFavorite = true
+                            favAdapter.notifyDataSetChanged()
+                        }.show()
+                    }
+                )
             }
         )
-
 
         recyclerView.adapter = favAdapter
 

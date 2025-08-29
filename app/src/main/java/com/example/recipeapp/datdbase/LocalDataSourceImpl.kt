@@ -29,6 +29,8 @@ class LocalDataSourceImpl(context: Context) : LocalDataSource {
         return dao.getLocalMealById(id)
     }
 
-
+    override suspend fun isMealFavorite(id: String): Boolean {
+        return dao.getLocalMealById(id) != null
+    }
 
 }

@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -23,8 +22,10 @@ import com.example.recipeapp.network.MealRemoteDataSource
 import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
+import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
+import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : Fragment() {
 
@@ -39,7 +40,9 @@ class HomeFragment : Fragment() {
     private lateinit var titleSpecialMeals : TextView
     private lateinit var swipeRefreshLayout : SwipeRefreshLayout
     private lateinit var mealCard : CardView
-    private lateinit var viewModel: MealViewModel   // ✅ خليته Global
+    private lateinit var viewModel: MealViewModel
+    private lateinit var mealFavoriteIcon: ImageButton
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,11 +64,20 @@ class HomeFragment : Fragment() {
         mealCard = view.findViewById(R.id.mealCard)
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         offlineAnimation = view.findViewById(R.id.offlineAnimation)
+        mealFavoriteIcon = view.findViewById(R.id.MealFavoriteIcon)
 
-        mealsAdapter = MealsAdapter { mealId ->
-            val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(mealId)
-            findNavController().navigate(action)
-        }
+
+        mealsAdapter = MealsAdapter(
+            onMealClick = { mealId ->
+                val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(mealId)
+                findNavController().navigate(action)
+            },
+            onFavoriteClick = { meal ->
+                viewModel.toggleMeal(meal)
+                meal.isFavorite = !meal.isFavorite
+            }
+        )
+
 
         val remoteDataSource: MealRemoteDataSource = MealRemoteDataSourceImpl(RetrofitInstance.api)
         val repository = MealRepository(remoteDataSource, LocalDataSourceImpl(requireContext()))
@@ -88,6 +100,48 @@ class HomeFragment : Fragment() {
             randomMealCategory.text = "Category: ${meal.strCategory}"
             randomMealArea.text = "Area: ${meal.strArea}"
             Glide.with(this).load(meal.strMealThumb).into(randomMealImage)
+
+            if (meal.isFavorite) {
+                mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
+            } else {
+                mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
+            }
+
+            mealFavoriteIcon.setOnClickListener {
+                if (meal.isFavorite) {
+                    requireContext().showConfirmDialog(
+                        title = "Remove Favorite",
+                        message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                        onConfirm = {
+                            viewModel.toggleMeal(meal)
+                            meal.isFavorite = false
+                            mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
+
+                            Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_SHORT)
+                                .setAction("Undo") {
+                                    viewModel.toggleMeal(meal)
+                                    meal.isFavorite = true
+                                    mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
+                                }
+                                .show()
+                        }
+                    )
+                } else {
+                    viewModel.toggleMeal(meal)
+                    meal.isFavorite = true
+                    mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
+
+                    Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_SHORT)
+                        .setAction("Undo") {
+                            viewModel.toggleMeal(meal)
+                            meal.isFavorite = false
+                            mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
+                        }.show()
+                }
+            }
+
+
+
 
             view.findViewById<View>(R.id.meal_image).setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(meal.idMeal)

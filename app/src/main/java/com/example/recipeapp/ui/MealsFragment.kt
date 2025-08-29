@@ -37,11 +37,13 @@ class MealsFragment : Fragment() {
         viewModel = ViewModelProvider(this, MealViewModelFactory(repo))[MealViewModel::class.java]
 
         recycler = view.findViewById(R.id.recyclerViewMeals)
-        adapter = MealsFilterAdapter { meal ->
-            val action = MealsFragmentDirections
-                .actionMealsFragmentToDetailsFragment(meal.idMeal)
-            findNavController().navigate(action)
-        }
+        adapter = MealsFilterAdapter(
+            onClick = { meal ->
+                val action = MealsFragmentDirections.actionMealsFragmentToDetailsFragment(meal.idMeal)
+                findNavController().navigate(action)
+            }
+        )
+
         recycler.adapter = adapter
         recycler.layoutManager = GridLayoutManager(requireContext(), 2)
 

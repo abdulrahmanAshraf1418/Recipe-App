@@ -8,5 +8,5 @@ interface LocalDataSource {
     suspend fun delete (meal: Meal)
     suspend fun listAll (): LiveData<List<Meal>>
     suspend fun getLocalMealById(id: String): Meal?
-
+    suspend fun isMealFavorite(id: String): Boolean
 }
