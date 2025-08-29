@@ -47,47 +47,40 @@ class MealsAdapter(
         holder.mealArea.text = "Area: ${meal.strArea}"
         Glide.with(holder.itemView).load(meal.strMealThumb).into(holder.mealImage)
 
-        // ✅ لو Favorite ولا لأ
         holder.btnFavorite.setImageResource(
             if (meal.isFavorite) R.drawable.heart_fill else R.drawable.heart_outline
         )
 
-        // ✅ لما اضغط على زرار الـ Favorite
         holder.btnFavorite.setOnClickListener {
             if (meal.isFavorite) {
-                // ✅ استخدم الـ reusable dialog
                 holder.itemView.context.showConfirmDialog(
                     title = "Remove Favorite",
                     message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
                     onConfirm = {
-                        // شيل الوجبة من المفضلة
                         onFavoriteClick(meal)
                         notifyItemChanged(position)
 
-                        // ✅ Snackbar مع Undo
                         Snackbar.make(holder.itemView, "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
                             .setAction("Undo") {
-                                onFavoriteClick(meal) // رجعها
+                                onFavoriteClick(meal)
                                 notifyItemChanged(position)
                             }
                             .show()
                     }
                 )
             } else {
-                // ✅ لو مش مضاف → ضيف على طول
                 onFavoriteClick(meal)
                 notifyItemChanged(position)
 
                 Snackbar.make(holder.itemView, "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
                     .setAction("Undo") {
-                        onFavoriteClick(meal) // رجّعها
+                        onFavoriteClick(meal)
                         notifyItemChanged(position)
                     }
                     .show()
             }
         }
 
-        // ✅ التنقل للتفاصيل
         holder.itemView.setOnClickListener {
             onMealClick(meal.idMeal)
         }

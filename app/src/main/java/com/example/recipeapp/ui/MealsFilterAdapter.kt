@@ -11,7 +11,7 @@ import com.example.recipeapp.R
 import com.example.recipeapp.models.MealItem
 
 class MealsFilterAdapter(
-    private val onClick: (MealItem) -> Unit   // 👈 هنا ضفنا callback
+    private val onClick: (MealItem) -> Unit
 ) : RecyclerView.Adapter<MealsFilterAdapter.MealFilterViewHolder>() {
 
     private var meals = ArrayList<MealItem>()

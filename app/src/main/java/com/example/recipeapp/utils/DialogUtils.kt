@@ -25,7 +25,6 @@ fun Context.showConfirmDialog(
         }
         .show()
 
-    // 🎨 تخصيص الأزرار بعد ما الـ Dialog يظهر
     dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
         textSize = 18f
         setAllCaps(false)
