@@ -55,6 +55,7 @@ class SearchFragment : Fragment() {
         val btnSearch = view.findViewById<ImageView>(R.id.btnSearch)
         progressBar = view.findViewById(R.id.progressBar)
         tvNoResults = view.findViewById(R.id.tvNoResults)
+
         recycler = view.findViewById(R.id.recyclerView)
         radioGroup = view.findViewById(R.id.radioGroup)
         offlineAnimation = view.findViewById(R.id.offlineAnimationSearch)
@@ -168,6 +169,7 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
+
             handler.postDelayed(searchRunnable!!, 500)
         }
 

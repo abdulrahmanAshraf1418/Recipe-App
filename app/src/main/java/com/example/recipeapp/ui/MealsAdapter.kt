@@ -26,7 +26,7 @@ class MealsAdapter (
         val mealName: TextView = itemView.findViewById(R.id.mealName)
         val mealCategory: TextView = itemView.findViewById(R.id.mealCategory)
         val mealArea: TextView = itemView.findViewById(R.id.mealArea)
-        val mealImage: ImageView = itemView.findViewById(R.id.ingredientImage)
+        val mealImage: ImageView = itemView.findViewById(R.id.mealImage)
 
 
     }

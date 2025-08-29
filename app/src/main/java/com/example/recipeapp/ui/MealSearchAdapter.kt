@@ -40,7 +40,7 @@ class MealSearchAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MealViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_meal, parent, false)
+            .inflate(R.layout.item_search_meal, parent, false)
         return MealViewHolder(view, onItemClick)
     }
 

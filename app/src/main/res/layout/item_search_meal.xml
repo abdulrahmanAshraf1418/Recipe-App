@@ -1,12 +1,13 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp">
 
     <LinearLayout
+        android:id="@+id/meal_details_open"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -17,36 +18,53 @@
             android:layout_height="186dp"
             android:scaleType="centerCrop" />
 
+        <TextView
+            android:id="@+id/mealName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:padding="6dp"
+            android:scrollHorizontally="false"
+            android:singleLine="true"
+            android:text="Meal Name"
+            android:textColor="@color/primaryColorDark"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/mealCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="6dp"
+            android:text="Category: Beef"
+            android:textColor="@color/primaryColorDark"
+            android:textSize="12sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingHorizontal="6dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="8dp">
+            android:padding="6dp">
 
             <TextView
-                android:id="@+id/mealName"
+                android:id="@+id/mealArea"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:text="Meal Name"
+                android:text="Area: British"
                 android:textColor="@color/primaryColorDark"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="start|center_vertical" />
+                android:textSize="12sp" />
 
             <ImageButton
-                android:id="@+id/itemFavoriteIcon"
+                android:id="@+id/mealFavoriteIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="Favorite"
-                android:layout_marginRight="14dp"
                 android:padding="2dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginBottom="4dp"
                 android:src="@drawable/heart_outline" />
         </LinearLayout>
 
