@@ -15,5 +15,7 @@ class AuthRepository(private val remoteDataSource: AuthRemoteDataSource) {
 
     fun getCurrentUser(): FirebaseUser? = remoteDataSource.getCurrentUser()
 
+    suspend fun signInAsGuest(): FirebaseUser? =
+        remoteDataSource.signInAsGuest()
     fun isLoggedIn(): Boolean = remoteDataSource.isLoggedIn()
 }

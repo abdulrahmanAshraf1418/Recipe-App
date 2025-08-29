@@ -1,11 +1,13 @@
 package com.example.recipeapp.ui
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
@@ -16,12 +18,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.target.Target
 import com.example.recipeapp.R
 import com.example.recipeapp.datdbase.LocalDataSourceImpl
 import com.example.recipeapp.network.MealRemoteDataSource
 import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
+import com.example.recipeapp.utils.checkGuestAction
 import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
@@ -42,6 +48,10 @@ class HomeFragment : Fragment() {
     private lateinit var mealCard : CardView
     private lateinit var viewModel: MealViewModel
     private lateinit var mealFavoriteIcon: ImageButton
+    private lateinit var lottieAnim : LottieAnimationView
+
+    private lateinit var progressBar: ProgressBar
+
 
 
     override fun onCreateView(
@@ -65,6 +75,8 @@ class HomeFragment : Fragment() {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         offlineAnimation = view.findViewById(R.id.offlineAnimation)
         mealFavoriteIcon = view.findViewById(R.id.MealFavoriteIcon)
+        progressBar = view.findViewById(R.id.progressBarHome)
+        lottieAnim = view.findViewById(R.id.imageLoadingAnimation)
 
 
         mealsAdapter = MealsAdapter(
@@ -75,7 +87,43 @@ class HomeFragment : Fragment() {
             onFavoriteClick = { meal ->
                 viewModel.toggleMeal(meal)
                 meal.isFavorite = !meal.isFavorite
+            },
+            onFavoriteRequest = { meal, position ->
+                checkGuestAction {
+                    if (meal.isFavorite) {
+                        requireContext().showConfirmDialog(
+                            title = "Remove Favorite",
+                            message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                            onConfirm = {
+                                viewModel.toggleMeal(meal)
+                                meal.isFavorite = false
+                                mealsAdapter.notifyItemChanged(position)
+
+                                Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
+                                    .setAction("Undo") {
+                                        viewModel.toggleMeal(meal)
+                                        meal.isFavorite = true
+                                        mealsAdapter.notifyItemChanged(position)
+                                    }
+                                    .show()
+                            }
+                        )
+                    } else {
+                        viewModel.toggleMeal(meal)
+                        meal.isFavorite = true
+                        mealsAdapter.notifyItemChanged(position)
+
+                        Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
+                            .setAction("Undo") {
+                                viewModel.toggleMeal(meal)
+                                meal.isFavorite = false
+                                mealsAdapter.notifyItemChanged(position)
+                            }
+                            .show()
+                    }
+                }
             }
+
         )
 
 
@@ -99,7 +147,31 @@ class HomeFragment : Fragment() {
             randomMealName.text = meal.strMeal
             randomMealCategory.text = "Category: ${meal.strCategory}"
             randomMealArea.text = "Area: ${meal.strArea}"
-            Glide.with(this).load(meal.strMealThumb).into(randomMealImage)
+            Glide.with(this)
+                .load(meal.strMealThumb)
+                .listener(object : com.bumptech.glide.request.RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable?>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        lottieAnim.visibility = View.GONE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable?>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        lottieAnim.visibility = View.GONE
+                        return false
+                    }
+                })
+                .into(randomMealImage)
 
             if (meal.isFavorite) {
                 mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
@@ -108,35 +180,37 @@ class HomeFragment : Fragment() {
             }
 
             mealFavoriteIcon.setOnClickListener {
-                if (meal.isFavorite) {
-                    requireContext().showConfirmDialog(
-                        title = "Remove Favorite",
-                        message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
-                        onConfirm = {
-                            viewModel.toggleMeal(meal)
-                            meal.isFavorite = false
-                            mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
+                checkGuestAction{
+                    if (meal.isFavorite) {
+                        requireContext().showConfirmDialog(
+                            title = "Remove Favorite",
+                            message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                            onConfirm = {
+                                viewModel.toggleMeal(meal)
+                                meal.isFavorite = false
+                                mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
 
-                            Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_SHORT)
-                                .setAction("Undo") {
-                                    viewModel.toggleMeal(meal)
-                                    meal.isFavorite = true
-                                    mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
-                                }
-                                .show()
-                        }
-                    )
-                } else {
-                    viewModel.toggleMeal(meal)
-                    meal.isFavorite = true
-                    mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
+                                Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_SHORT)
+                                    .setAction("Undo") {
+                                        viewModel.toggleMeal(meal)
+                                        meal.isFavorite = true
+                                        mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
+                                    }
+                                    .show()
+                            }
+                        )
+                    } else {
+                        viewModel.toggleMeal(meal)
+                        meal.isFavorite = true
+                        mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
 
-                    Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_SHORT)
-                        .setAction("Undo") {
-                            viewModel.toggleMeal(meal)
-                            meal.isFavorite = false
-                            mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
-                        }.show()
+                        Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_SHORT)
+                            .setAction("Undo") {
+                                viewModel.toggleMeal(meal)
+                                meal.isFavorite = false
+                                mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
+                            }.show()
+                    }
                 }
             }
 
@@ -162,7 +236,6 @@ class HomeFragment : Fragment() {
 
     private fun loadData() {
         if (isNetworkAvailable()) {
-            setViewsVisibility(true)
             offlineAnimation.cancelAnimation()
             offlineAnimation.visibility = View.GONE
 
@@ -204,4 +277,3 @@ class HomeFragment : Fragment() {
         return letters.random().toString()
     }
 }
-

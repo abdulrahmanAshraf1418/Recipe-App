@@ -8,4 +8,5 @@ interface AuthRemoteDataSource {
     suspend fun register(name: String, email: String, password: String): FirebaseUser?
     fun logout()
     fun isLoggedIn(): Boolean
+    suspend fun signInAsGuest(): FirebaseUser?
 }

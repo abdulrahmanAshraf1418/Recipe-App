@@ -8,6 +8,10 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.suspendCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+
 
 class AuthRemoteDataSourceImpl(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -49,6 +53,21 @@ class AuthRemoteDataSourceImpl(
     override fun logout() {
         auth.signOut()
     }
+
+    override suspend fun signInAsGuest(): FirebaseUser? {
+        return suspendCoroutine { cont ->
+            FirebaseAuth.getInstance().signInAnonymously()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        cont.resume(task.result?.user)
+                    } else {
+                        cont.resumeWithException(task.exception ?: Exception("Guest login failed"))
+                    }
+                }
+        }
+    }
+
+
 
     override fun isLoggedIn(): Boolean = auth.currentUser != null
 }

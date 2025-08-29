@@ -1,10 +1,17 @@
 package com.example.recipeapp.viewmodel
 
+import android.app.AlertDialog
+import com.example.recipeapp.R
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
 import com.example.recipeapp.repository.AuthRepository
+import com.example.recipeapp.utils.showConfirmDialog
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
@@ -44,6 +51,22 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
+    fun loginAsGuest() {
+        viewModelScope.launch {
+            _authState.value = AuthUiState.Loading
+            try {
+                val user = repository.signInAsGuest()
+                if (user != null) {
+                    _authState.value = AuthUiState.Success(user)
+                } else {
+                    _authState.value = AuthUiState.Error("Guest login failed")
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthUiState.Error(e.message ?: "Guest login failed")
+            }
+        }
+    }
+
     fun logout() {
         repository.logout()
         _authState.value = AuthUiState.Idle
@@ -62,4 +85,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
             false
         }
     }
+
+    fun getCurrentUser() = repository.getCurrentUser()
+
 }

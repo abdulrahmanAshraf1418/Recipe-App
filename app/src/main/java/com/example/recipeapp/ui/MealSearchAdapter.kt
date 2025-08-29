@@ -10,12 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.recipeapp.R
 import com.example.recipeapp.models.Meal
+import com.example.recipeapp.utils.checkGuestAction
 import com.example.recipeapp.utils.showConfirmDialog
 import com.google.android.material.snackbar.Snackbar
 
 class MealSearchAdapter(
     private val onMealClick: (Meal) -> Unit,
-    private val onFavoriteClick: (Meal) -> Unit
+    private val onFavoriteClick: (Meal) -> Unit,
+    private val onFavoriteRequest: (meal: Meal, position: Int) -> Unit
+
 ) : RecyclerView.Adapter<MealSearchAdapter.MealViewHolder>() {
 
     private var meals = ArrayList<Meal>()
@@ -47,33 +50,7 @@ class MealSearchAdapter(
         )
 
         holder.btnFavorite.setOnClickListener {
-            if (meal.isFavorite) {
-                holder.itemView.context.showConfirmDialog(
-                    title = "Remove Favorite",
-                    message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
-                    onConfirm = {
-                        onFavoriteClick(meal)
-                        notifyItemChanged(position)
-
-                        Snackbar.make(holder.itemView, "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
-                            .setAction("Undo") {
-                                onFavoriteClick(meal)
-                                notifyItemChanged(position)
-                            }
-                            .show()
-                    }
-                )
-            } else {
-                onFavoriteClick(meal)
-                notifyItemChanged(position)
-
-                Snackbar.make(holder.itemView, "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
-                    .setAction("Undo") {
-                        onFavoriteClick(meal)
-                        notifyItemChanged(position)
-                    }
-                    .show()
-            }
+            onFavoriteRequest(meal, position)
         }
 
         holder.itemView.setOnClickListener { onMealClick(meal) }

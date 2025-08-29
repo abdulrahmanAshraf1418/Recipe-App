@@ -1,10 +1,11 @@
 package com.example.recipeapp.ui
 
+import android.R.attr.height
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -23,10 +24,14 @@ import com.example.recipeapp.viewmodel.AuthViewModel
 import com.example.recipeapp.viewmodel.AuthViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.OvershootInterpolator
+import androidx.core.view.isVisible
 
 class RecipeActivity : AppCompatActivity() {
 
     private lateinit var viewModel: AuthViewModel
+    private var isGuest: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +47,8 @@ class RecipeActivity : AppCompatActivity() {
         val repo = AuthRepository(AuthRemoteDataSourceImpl())
         viewModel = ViewModelProvider(this, AuthViewModelFactory(repo))[AuthViewModel::class.java]
 
+        isGuest = viewModel.getCurrentUser()?.isAnonymous == true
+
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
@@ -50,39 +57,70 @@ class RecipeActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
+        val topLevelDestinations = setOf(
+            R.id.homeFragment,
+            R.id.searchFragment,
+            R.id.profileFragment,
+            R.id.favoritesFragment
+        )
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id in topLevelDestinations) {
+                if (!bottomNav.isVisible) {
+                    bottomNav.apply {
+                        translationY = height.toFloat()
+                        visibility = View.VISIBLE
+                        animate()
+                            .translationY(0f)
+                            .setDuration(500)
+                            .setInterpolator(AccelerateDecelerateInterpolator())
+                            .start()
+                    }
+                }
+            } else {
+                if (bottomNav.isVisible) {
+                    bottomNav.animate()
+                        .translationY(height.toFloat())
+                        .setDuration(500)
+                        .setInterpolator(AccelerateDecelerateInterpolator())
+                        .withEndAction {
+                            bottomNav.visibility = View.GONE
+                        }
+                        .start()
+                }
+            }
+        }
+
         val appBarConfiguration = AppBarConfiguration(
             setOf(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment, R.id.favoritesFragment, R.id.aboutFragment)
         )
-
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
 
         bottomNav.setupWithNavController(navController)
 
+        if (isGuest) {
+            bottomNav.menu.removeItem(R.id.favoritesFragment)
+            bottomNav.menu.removeItem(R.id.aboutFragment)
+        }
+
         bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.homeFragment -> {
-                    navController.navigate(R.id.homeFragment)
-                    true
-                }
-                R.id.searchFragment -> {
-                    navController.navigate(R.id.searchFragment)
-                    true
-                }
-                R.id.profileFragment -> {
-                    navController.navigate(R.id.profileFragment)
-                    true
-                }
-                R.id.favoritesFragment -> {
-                    navController.navigate(R.id.favoritesFragment)
-                    true
-                }
-                else -> false
+            if (!isGuest || (item.itemId !=R.id.favoritesFragment)) {
+                NavigationUI.onNavDestinationSelected(item, navController)
+                true
+            } else {
+                false
             }
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.top_app_bar, menu)
+
+        if (isGuest) {
+            menu?.findItem(R.id.action_about)?.isVisible = false
+            menu?.findItem(R.id.action_signout)?.isVisible = false
+        }
+
         return true
     }
 
@@ -93,11 +131,15 @@ class RecipeActivity : AppCompatActivity() {
                 true
             }
             R.id.action_about -> {
-                findNavController(R.id.nav_host_fragment).navigate(R.id.aboutFragment)
+                if (!isGuest) {
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.aboutFragment)
+                }
                 true
             }
             R.id.action_signout -> {
-                showSignOutDialog()
+                if (!isGuest) {
+                    showSignOutDialog()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -122,5 +164,4 @@ class RecipeActivity : AppCompatActivity() {
             }
         )
     }
-
 }

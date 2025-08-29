@@ -20,12 +20,18 @@ import com.example.recipeapp.utils.SnackbarUtils
 import com.example.recipeapp.viewmodel.AuthUiState
 import com.example.recipeapp.viewmodel.AuthViewModel
 import com.example.recipeapp.viewmodel.AuthViewModelFactory
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginFragment : Fragment() {
 
     private lateinit var viewModel: AuthViewModel
+    private lateinit var auth: FirebaseAuth
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.fragment_login, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,12 +40,16 @@ class LoginFragment : Fragment() {
         val repo = AuthRepository(AuthRemoteDataSourceImpl())
         viewModel = ViewModelProvider(this, AuthViewModelFactory(repo))[AuthViewModel::class.java]
 
+        auth = FirebaseAuth.getInstance()
+
         val emailEt = view.findViewById<EditText>(R.id.edit_textEmail)
         val passwordEt = view.findViewById<EditText>(R.id.edit_textPassword)
         val loginBtn = view.findViewById<Button>(R.id.btnLogin)
         val textRegister = view.findViewById<TextView>(R.id.tvRegister)
         val progressLogin = view.findViewById<ProgressBar>(R.id.progressLogin)
+        val guestBtn = view.findViewById<TextView>(R.id.btn_guest)
 
+        // ========== Login with Email & Password ==========
         loginBtn.setOnClickListener {
             val email = emailEt.text.toString().trim()
             val password = passwordEt.text.toString().trim()
@@ -59,6 +69,27 @@ class LoginFragment : Fragment() {
             }
         }
 
+        // ========== Login as Guest ==========
+        guestBtn.setOnClickListener {
+            progressLogin.visibility = View.VISIBLE
+            loginBtn.visibility = View.GONE
+
+            auth.signInAnonymously()
+                .addOnCompleteListener(requireActivity()) { task ->
+                    progressLogin.visibility = View.GONE
+                    loginBtn.visibility = View.VISIBLE
+
+                    if (task.isSuccessful) {
+                        SnackbarUtils.showSnackbar(view, "Welcome Guest!", true)
+                        startActivity(Intent(requireContext(), RecipeActivity::class.java))
+                        requireActivity().finish()
+                    } else {
+                        SnackbarUtils.showSnackbar(view, "Guest login failed!", false)
+                    }
+                }
+        }
+
+        // ========== Observe ViewModel ==========
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is AuthUiState.Loading -> {
@@ -82,6 +113,7 @@ class LoginFragment : Fragment() {
             }
         }
 
+        // ========== Go to Register ==========
         textRegister.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }

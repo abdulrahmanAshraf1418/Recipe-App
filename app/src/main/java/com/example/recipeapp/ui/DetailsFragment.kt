@@ -1,6 +1,7 @@
 package com.example.recipeapp.ui
 
 import IngredientAdapter
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,7 +16,10 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.example.recipeapp.R
 import com.example.recipeapp.datdbase.LocalDataSourceImpl
 import com.example.recipeapp.models.Ingredient
@@ -23,6 +27,8 @@ import com.example.recipeapp.models.Meal
 import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
+import com.example.recipeapp.utils.checkGuestAction
+import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -31,7 +37,7 @@ class DetailsFragment : Fragment() {
 
     private var mealImage: ImageView? = null
     private var Name: TextView? = null
-    private var btnFavorite: ImageButton? = null
+    private var mealFavoriteIcon: ImageButton? = null
     private var Category: TextView? = null
     private var Area: TextView? = null
     private var details: TextView? = null
@@ -40,6 +46,7 @@ class DetailsFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel : MealViewModel
     private lateinit var YoutubeLabel : TextView
+    private lateinit var lottieAnim: LottieAnimationView
     private var isExpanded = false
 
 
@@ -67,14 +74,11 @@ class DetailsFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         setupClickListeners()
-        viewModel.messageLiveData.observe(viewLifecycleOwner) { message ->
-            Snackbar.make(requireView(), message, Snackbar.LENGTH_SHORT).show()
-        }
     }
 
     private fun initViews(view: View) {
         Name = view.findViewById(R.id.MealName)
-        btnFavorite = view.findViewById(R.id.btnFavorite)
+        mealFavoriteIcon = view.findViewById(R.id.btnFavorite)
         btnMore = view.findViewById(R.id.btn_more)
         mealImage = view.findViewById(R.id.meal_image)
         Category = view.findViewById(R.id.MealCategory)
@@ -83,6 +87,7 @@ class DetailsFragment : Fragment() {
         YoutubeLabel = view.findViewById(R.id.youtube_label)
         youTubePlayerView = view.findViewById(R.id.youtube_player_view)
         recyclerView = view.findViewById(R.id.recyclerViewIngredients)
+        lottieAnim = view.findViewById(R.id.imageLoadingAnimation_Details)
 
     }
 
@@ -141,7 +146,30 @@ class DetailsFragment : Fragment() {
         Area?.text = getString(R.string.area_label, meal.strArea)
         Category?.text = getString(R.string.category_label, meal.strCategory)
         mealImage?.let { imageView ->
-            Glide.with(this).load(meal.strMealThumb).into(imageView)
+            Glide.with(this).load(meal.strMealThumb)
+                .listener(object : com.bumptech.glide.request.RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: com.bumptech.glide.request.target.Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        lottieAnim.visibility = View.GONE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: com.bumptech.glide.request.target.Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        lottieAnim.visibility = View.GONE
+                        return false
+                    }
+                })
+                .into(imageView)
         }
 
         if (isOnline) {
@@ -153,19 +181,43 @@ class DetailsFragment : Fragment() {
         }
 
         if (meal.isFavorite) {
-            btnFavorite?.setImageResource(R.drawable.heart_fill)
+            mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
         } else {
-            btnFavorite?.setImageResource(R.drawable.heart_outline)
+            mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
         }
 
-        btnFavorite?.setOnClickListener {
-            viewModel.toggleMeal(meal)
+        mealFavoriteIcon?.setOnClickListener {
+            checkGuestAction{
+                if (meal.isFavorite) {
+                    requireContext().showConfirmDialog(
+                        title = "Remove Favorite",
+                        message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                        onConfirm = {
+                            viewModel.toggleMeal(meal)
+                            meal.isFavorite = false
+                            mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
 
-            meal.isFavorite = !meal.isFavorite
-            if (meal.isFavorite) {
-                btnFavorite?.setImageResource(R.drawable.heart_fill)
-            } else {
-                btnFavorite?.setImageResource(R.drawable.heart_outline)
+                            Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_SHORT)
+                                .setAction("Undo") {
+                                    viewModel.toggleMeal(meal)
+                                    meal.isFavorite = true
+                                    mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
+                                }
+                                .show()
+                        }
+                    )
+                } else {
+                    viewModel.toggleMeal(meal)
+                    meal.isFavorite = true
+                    mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
+
+                    Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_SHORT)
+                        .setAction("Undo") {
+                            viewModel.toggleMeal(meal)
+                            meal.isFavorite = false
+                            mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
+                        }.show()
+                }
             }
         }
     }

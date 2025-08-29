@@ -24,8 +24,11 @@ import com.example.recipeapp.datdbase.LocalDataSourceImpl
 import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
+import com.example.recipeapp.utils.checkGuestAction
+import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
+import com.google.android.material.snackbar.Snackbar
 
 class SearchFragment : Fragment() {
 
@@ -94,6 +97,41 @@ class SearchFragment : Fragment() {
             onFavoriteClick = { meal ->
                 viewModel.toggleMeal(meal)
                 meal.isFavorite = !meal.isFavorite
+            },
+            onFavoriteRequest = { meal, position ->
+                checkGuestAction {
+                    if (meal.isFavorite) {
+                        requireContext().showConfirmDialog(
+                            title = "Remove Favorite",
+                            message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                            onConfirm = {
+                                viewModel.toggleMeal(meal)
+                                meal.isFavorite = false
+                                mealSearchAdapter.notifyItemChanged(position)
+
+                                Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
+                                    .setAction("Undo") {
+                                        viewModel.toggleMeal(meal)
+                                        meal.isFavorite = true
+                                        mealSearchAdapter.notifyItemChanged(position)
+                                    }
+                                    .show()
+                            }
+                        )
+                    } else {
+                        viewModel.toggleMeal(meal)
+                        meal.isFavorite = true
+                        mealSearchAdapter.notifyItemChanged(position)
+
+                        Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
+                            .setAction("Undo") {
+                                viewModel.toggleMeal(meal)
+                                meal.isFavorite = false
+                                mealSearchAdapter.notifyItemChanged(position)
+                            }
+                            .show()
+                    }
+                }
             }
         )
 

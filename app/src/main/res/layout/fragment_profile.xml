@@ -25,6 +25,7 @@
         android:text="User Name"
         android:textColor="@color/black"
         android:textSize="18sp"
+        android:gravity="center"
         android:layout_marginBottom="24dp" />
 
     <FrameLayout
@@ -42,28 +43,59 @@
             android:padding="4dp"/>
     </FrameLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnFavorites"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:textColor="@color/primaryRed"
-        android:text="Favorite Meals"
-        app:backgroundTint="@android:color/white"
-        app:cornerRadius="12dp"
-        app:strokeColor="@color/primaryRed"
-        app:textAllCaps="false"
-        app:strokeWidth="2dp" />
+        android:layout_height="150dp">
 
+        <!-- Guest Login Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/guest_buttons"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_gravity="center"
+            android:text="Login to Access All Features"
+            android:textColor="@color/primaryRed"
+            android:visibility="gone"
+            app:backgroundTint="@android:color/white"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/primaryRed"
+            app:strokeWidth="2dp"
+            app:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/primaryRed"
-        android:padding="12dp"
-        android:text="Logout"
-        android:textColor="@color/white"
-        android:textStyle="bold"/>
+        <!-- User Buttons Layout -->
+        <LinearLayout
+            android:id="@+id/User_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFavorites"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:text="Favorite Meals"
+                android:textColor="@color/primaryRed"
+                app:backgroundTint="@android:color/white"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/primaryRed"
+                app:strokeWidth="2dp"
+                app:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/primaryRed"
+                android:padding="12dp"
+                android:text="Logout"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </FrameLayout>
+
 </LinearLayout>
