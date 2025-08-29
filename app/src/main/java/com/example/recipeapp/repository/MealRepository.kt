@@ -13,15 +13,27 @@ class MealRepository(
 ) {
 
     suspend fun getRandomMeal(): Meal? {
-        return remoteDataSource.getRandomMeal().meals?.firstOrNull()
+        val meal = remoteDataSource.getRandomMeal().meals?.firstOrNull()
+        meal?.let {
+            it.isFavorite = localDataSource.isMealFavorite(it.idMeal)
+        }
+        return meal
     }
 
     suspend fun getMealsByFirstLetter(letter: String): List<Meal> {
-        return (remoteDataSource.getMealsByFirstLetter(letter).meals ?: emptyList()) as List<Meal>
+        val meals = remoteDataSource.getMealsByFirstLetter(letter).meals ?: emptyList()
+        return meals.map { meal ->
+            meal?.isFavorite = localDataSource.isMealFavorite(meal.idMeal)
+            meal as Meal
+        }
     }
 
     suspend fun searchMealsByName(name: String): List<Meal> {
-        return (remoteDataSource.searchMealsByName(name).meals ?: emptyList()) as List<Meal>
+        val meals = remoteDataSource.searchMealsByName(name).meals ?: emptyList()
+        return meals.map { meal ->
+            meal?.isFavorite = localDataSource.isMealFavorite(meal.idMeal)
+            meal as Meal
+        }
     }
 
     suspend fun listCategories(): List<String> =
@@ -44,14 +56,7 @@ class MealRepository(
 
     suspend fun getMealById(id: String): Meal? {
         val apiMeal = remoteDataSource.getMealById(id).meals?.firstOrNull()
-
-        apiMeal?.let {
-            val savedMeal = localDataSource.getLocalMealById(id)
-            if (savedMeal != null) {
-                it.isFavorite = true
-            }
-        }
-
+        apiMeal?.isFavorite = localDataSource.isMealFavorite(id)
         return apiMeal
     }
 
@@ -66,7 +71,6 @@ class MealRepository(
             }
         }
     }
-
     suspend fun getSavedMealById(id: String): Meal? {
         return localDataSource.getLocalMealById(id)
     }

@@ -65,9 +65,17 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
     fun searchMeals(name: String) {
         viewModelScope.launch {
             val meals = repository.searchMealsByName(name)
+
+            meals.forEach { meal ->
+                val savedMeal = repository.getSavedMealById(meal.idMeal ?: "")
+                if (savedMeal != null) {
+                    meal.isFavorite = true
+                }
+            }
             mealsByNameLiveData.postValue(meals)
         }
     }
+
 
     fun fetchCategories() = viewModelScope.launch {
         categoriesLiveData.postValue(repository.listCategories())

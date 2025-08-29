@@ -85,11 +85,17 @@ class SearchFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        mealSearchAdapter = MealSearchAdapter { meal ->
-            val action = SearchFragmentDirections
-                .actionSearchFragmentToDetailsFragment(meal.idMeal)
-            findNavController().navigate(action)
-        }
+        mealSearchAdapter = MealSearchAdapter(
+            onMealClick = { meal ->
+                val action = SearchFragmentDirections
+                    .actionSearchFragmentToDetailsFragment(meal.idMeal)
+                findNavController().navigate(action)
+            },
+            onFavoriteClick = { meal ->
+                viewModel.toggleMeal(meal)
+                meal.isFavorite = !meal.isFavorite
+            }
+        )
 
         recycler.adapter = simpleAdapter
         recycler.layoutManager = GridLayoutManager(requireContext(), 2)

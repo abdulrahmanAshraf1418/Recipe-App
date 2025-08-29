@@ -1,6 +1,5 @@
 package com.example.recipeapp.ui
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.recipeapp.R
 import com.example.recipeapp.network.AuthRemoteDataSourceImpl
 import com.example.recipeapp.repository.AuthRepository
+import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.AuthViewModel
 import com.example.recipeapp.viewmodel.AuthViewModelFactory
 
@@ -57,25 +57,19 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showSignOutDialog() {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Sign Out")
-        builder.setMessage("Are you sure you want to sign out?")
+        requireContext().showConfirmDialog(
+            title = "Sign Out",
+            message = "Are you sure you want to sign out?",
+            positiveText = "Yes",
+            negativeText = "Cancel",
+            onConfirm = {
+                viewModel.logout()
 
-        builder.setPositiveButton("Yes") { dialog, _ ->
-            viewModel.logout()
-
-            val intent = Intent(requireContext(), AuthActivity::class.java)
-            startActivity(intent)
-            requireActivity().finish()
-
-            dialog.dismiss()
-        }
-
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        val dialog = builder.create()
-        dialog.show()
+                val intent = Intent(requireContext(), AuthActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
+            }
+        )
     }
+
 }
