@@ -15,7 +15,6 @@ import com.example.recipeapp.models.Meal
 
 class MealsAdapter(
     private val onMealClick: (mealId: String?) -> Unit,
-    private val onFavoriteClick: (meal: Meal) -> Unit,
     private val onFavoriteRequest: (meal: Meal, position: Int) -> Unit
 ) : RecyclerView.Adapter<MealsAdapter.MealViewHolder>() {
 

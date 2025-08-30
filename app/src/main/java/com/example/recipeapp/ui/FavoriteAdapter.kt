@@ -22,6 +22,10 @@ class FavoriteAdapter (
         this.meals = meals
         notifyDataSetChanged()
     }
+    fun getMealAt(position: Int): Meal {
+        return meals[position]
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavViewHolder {
         val view = LayoutInflater.from(parent.context)

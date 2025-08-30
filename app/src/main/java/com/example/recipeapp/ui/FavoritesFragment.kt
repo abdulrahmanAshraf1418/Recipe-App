@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recipeapp.R
@@ -73,6 +74,43 @@ class FavoritesFragment : Fragment() {
         )
 
         recyclerView.adapter = favAdapter
+        val itemTouchHelper = ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val meal = favAdapter.getMealAt(position)
+                requireContext().showConfirmDialog(
+                    title = "Remove Favorite",
+                    message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                    positiveText = "Yes",
+                    negativeText = "Cancel",
+                    onConfirm = {
+                        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@showConfirmDialog
+                        viewModel.toggleMeal(meal, uid)
+                        meal.isFavorite = false
+
+                        favAdapter.notifyItemRemoved(position)
+
+                        Snackbar.make(requireView(), "${meal.strMeal} removed", Snackbar.LENGTH_LONG)
+                            .setAction("Undo") {
+                                viewModel.toggleMeal(meal, uid)
+                                meal.isFavorite = true
+                                favAdapter.notifyItemInserted(position)
+                            }
+                                .show()
+                })
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
 
         return view
     }
@@ -80,19 +118,15 @@ class FavoritesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ✅ اضبط الـ Repository
         val remoteDataSource = MealRemoteDataSourceImpl(RetrofitInstance.api)
         val localDataSource = LocalDataSourceImpl(requireContext())
         val repository = MealRepository(remoteDataSource, localDataSource)
 
-        // ✅ هات الـ userId من FirebaseAuth
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-        // ✅ مرر الـ userId للـ Factory
         val factory = MealViewModelFactory(repository, userId)
         viewModel = ViewModelProvider(this, factory)[MealViewModel::class.java]
 
-        // ✅ Observe هنا
         viewModel.allLocalMealsLiveData.observe(viewLifecycleOwner) { meals ->
             if (meals.isNullOrEmpty()) {
                 recyclerView.visibility = View.GONE
@@ -104,7 +138,6 @@ class FavoritesFragment : Fragment() {
             }
         }
 
-        // ✅ Call هنا
         viewModel.getAllLocalMeals()
     }
 }

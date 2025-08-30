@@ -86,12 +86,6 @@ class HomeFragment : Fragment() {
                 val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(mealId)
                 findNavController().navigate(action)
             },
-            onFavoriteClick = { meal ->
-                userId?.let { uid ->
-                    viewModel.toggleMeal(meal, uid)
-                    meal.isFavorite = !meal.isFavorite
-                }
-            },
             onFavoriteRequest = { meal, position ->
                 checkGuestAction {
                     userId?.let { uid ->
@@ -220,7 +214,7 @@ class HomeFragment : Fragment() {
                 }
             }
 
-            view.findViewById<View>(R.id.meal_image).setOnClickListener {
+            view.findViewById<View>(R.id.mealCard).setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(meal.idMeal)
                 findNavController().navigate(action)
             }
