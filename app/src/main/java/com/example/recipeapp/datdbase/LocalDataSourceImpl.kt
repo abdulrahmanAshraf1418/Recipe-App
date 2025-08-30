@@ -14,13 +14,11 @@ class LocalDataSourceImpl(context: Context) : LocalDataSource {
     }
 
     override suspend fun insert(meal: Meal, userId: String) {
-        // نضيف userId للوجبة قبل التخزين
         val mealWithUser = meal.copy(userId = userId, isFavorite = true)
         dao.insertMeal(mealWithUser)
     }
 
     override suspend fun delete(meal: Meal, userId: String) {
-        // لازم نمسح الوجبة لليوزر المحدد
         val mealWithUser = meal.copy(userId = userId)
         dao.deleteMeal(mealWithUser)
     }

@@ -64,7 +64,6 @@ class ProfileFragment : Fragment() {
         if (repo.getCurrentUser()?.isAnonymous == true) {
             showGuestUI()
         } else {
-
             showUserUI(currentUser?.displayName ?: currentUser?.email ?: "User")
         }
     }

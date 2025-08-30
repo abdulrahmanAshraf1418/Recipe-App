@@ -12,7 +12,6 @@ interface MealDao {
     @Delete
     suspend fun deleteMeal(meal: Meal)
 
-    // هات المفضلة الخاصة بالمستخدم الحالي
     @Query("SELECT * FROM meals WHERE userId = :userId")
     fun getAllLocalMeals(userId: String): LiveData<List<Meal>>
 
