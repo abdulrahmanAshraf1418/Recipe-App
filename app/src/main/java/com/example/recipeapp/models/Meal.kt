@@ -56,5 +56,6 @@ data class Meal(
     val strSource: String?,
     val strTags: String?,
     val strYoutube: String?,
-    var isFavorite : Boolean = false
+    var isFavorite : Boolean = false,
+    val userId: String
 )

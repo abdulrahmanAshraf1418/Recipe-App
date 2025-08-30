@@ -55,20 +55,17 @@ class RegisterFragment : Fragment() {
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is AuthUiState.Loading -> {
-                    registerBtn.visibility = View.GONE
-                    progressRegister.visibility = View.VISIBLE
+                    setRegisterLoading(true, registerBtn, textLogin, progressRegister)
                 }
                 is AuthUiState.Success -> {
-                    registerBtn.visibility = View.VISIBLE
-                    progressRegister.visibility = View.GONE
+                    setRegisterLoading(false, registerBtn, textLogin, progressRegister)
                     SnackbarUtils.showSnackbar(view, "Register Successful", true)
                     viewModel.resetState()
                     startActivity(Intent(requireContext(), RecipeActivity::class.java))
                     requireActivity().finish()
                 }
                 is AuthUiState.Error -> {
-                    registerBtn.visibility = View.VISIBLE
-                    progressRegister.visibility = View.GONE
+                    setRegisterLoading(false, registerBtn, textLogin, progressRegister)
                     SnackbarUtils.showSnackbar(view, state.message, false)
                     viewModel.resetState()
                 }
@@ -76,8 +73,22 @@ class RegisterFragment : Fragment() {
             }
         }
 
+
         textLogin.setOnClickListener {
             findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
     }
 }
+
+private fun setRegisterLoading(isLoading: Boolean, registerBtn: View, loginText: View, progress: View) {
+    if (isLoading) {
+        registerBtn.visibility = View.GONE
+        loginText.visibility = View.GONE
+        progress.visibility = View.VISIBLE
+    } else {
+        registerBtn.visibility = View.VISIBLE
+        loginText.visibility = View.VISIBLE
+        progress.visibility = View.GONE
+    }
+}
+

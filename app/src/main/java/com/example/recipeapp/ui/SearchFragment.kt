@@ -29,6 +29,7 @@ import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 
 class SearchFragment : Fragment() {
 
@@ -44,6 +45,9 @@ class SearchFragment : Fragment() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
+
+    private val currentUid: String?
+        get() = FirebaseAuth.getInstance().currentUser?.uid
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -67,7 +71,7 @@ class SearchFragment : Fragment() {
             MealRemoteDataSourceImpl(RetrofitInstance.api),
             LocalDataSourceImpl(requireContext())
         )
-        viewModel = ViewModelProvider(this, MealViewModelFactory(repo))[MealViewModel::class.java]
+        viewModel = ViewModelProvider(this, MealViewModelFactory(repo, currentUid.toString()))[MealViewModel::class.java]
 
         if (isNetworkAvailable()) {
             setViewsVisibility(true)
@@ -95,41 +99,45 @@ class SearchFragment : Fragment() {
                 findNavController().navigate(action)
             },
             onFavoriteClick = { meal ->
-                viewModel.toggleMeal(meal)
-                meal.isFavorite = !meal.isFavorite
+                currentUid?.let { uid ->
+                    viewModel.toggleMeal(meal, uid)
+                    meal.isFavorite = !meal.isFavorite
+                }
             },
             onFavoriteRequest = { meal, position ->
                 checkGuestAction {
-                    if (meal.isFavorite) {
-                        requireContext().showConfirmDialog(
-                            title = "Remove Favorite",
-                            message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
-                            onConfirm = {
-                                viewModel.toggleMeal(meal)
-                                meal.isFavorite = false
-                                mealSearchAdapter.notifyItemChanged(position)
+                    currentUid?.let { uid ->
+                        if (meal.isFavorite) {
+                            requireContext().showConfirmDialog(
+                                title = "Remove Favorite",
+                                message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                                onConfirm = {
+                                    viewModel.toggleMeal(meal, uid)
+                                    meal.isFavorite = false
+                                    mealSearchAdapter.notifyItemChanged(position)
 
-                                Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
-                                    .setAction("Undo") {
-                                        viewModel.toggleMeal(meal)
-                                        meal.isFavorite = true
-                                        mealSearchAdapter.notifyItemChanged(position)
-                                    }
-                                    .show()
-                            }
-                        )
-                    } else {
-                        viewModel.toggleMeal(meal)
-                        meal.isFavorite = true
-                        mealSearchAdapter.notifyItemChanged(position)
+                                    Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
+                                        .setAction("Undo") {
+                                            viewModel.toggleMeal(meal, uid)
+                                            meal.isFavorite = true
+                                            mealSearchAdapter.notifyItemChanged(position)
+                                        }
+                                        .show()
+                                }
+                            )
+                        } else {
+                            viewModel.toggleMeal(meal, uid)
+                            meal.isFavorite = true
+                            mealSearchAdapter.notifyItemChanged(position)
 
-                        Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
-                            .setAction("Undo") {
-                                viewModel.toggleMeal(meal)
-                                meal.isFavorite = false
-                                mealSearchAdapter.notifyItemChanged(position)
-                            }
-                            .show()
+                            Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
+                                .setAction("Undo") {
+                                    viewModel.toggleMeal(meal, uid)
+                                    meal.isFavorite = false
+                                    mealSearchAdapter.notifyItemChanged(position)
+                                }
+                                .show()
+                        }
                     }
                 }
             }

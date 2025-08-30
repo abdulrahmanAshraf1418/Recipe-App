@@ -99,7 +99,7 @@
                 android:text="Login"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                app:backgroundTint="?attr/colorPrimary"
+                app:backgroundTint="@color/primaryColor"
                 app:cornerRadius="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -111,14 +111,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:indeterminate="true"
-                android:indeterminateTint="?attr/colorPrimary"
+                android:indeterminateTint="@color/primaryColor"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnLogin"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/passwordLayout" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+
 
             <!-- Guest + Register في عمود واحد -->
             <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -135,7 +139,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Continue as Guest"
-                    android:textColor="?attr/colorPrimaryVariant"
+                    android:textColor="@color/primaryColor"
                     android:textStyle="bold" />
 
                 <TextView

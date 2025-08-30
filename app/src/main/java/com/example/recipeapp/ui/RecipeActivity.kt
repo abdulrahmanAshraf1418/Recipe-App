@@ -91,7 +91,7 @@ class RecipeActivity : AppCompatActivity() {
         }
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment, R.id.favoritesFragment, R.id.aboutFragment)
+            setOf(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment, R.id.favoritesFragment)
         )
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
 

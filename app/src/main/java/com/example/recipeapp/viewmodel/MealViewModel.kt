@@ -9,7 +9,10 @@ import com.example.recipeapp.models.MealItem
 import com.example.recipeapp.repository.MealRepository
 import kotlinx.coroutines.launch
 
-class MealViewModel(private val repository: MealRepository) : ViewModel() {
+class MealViewModel(
+    private val repository: MealRepository,
+    private val userId: String // 👈 استقبل userId من الـ Activity/Fragment
+) : ViewModel() {
 
     val randomMealLiveData = MutableLiveData<Meal>()
     val mealsByLetterLiveData = MutableLiveData<List<Meal>>()
@@ -35,7 +38,7 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
 
     fun getRandomMeal() {
         viewModelScope.launch {
-            val meal = repository.getRandomMeal()
+            val meal = repository.getRandomMeal(userId)
             meal?.let {
                 randomMealLiveData.postValue(it)
             }
@@ -44,16 +47,16 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
 
     fun getMealsByLetter(letter: String) {
         viewModelScope.launch {
-            val meals = repository.getMealsByFirstLetter(letter)
+            val meals = repository.getMealsByFirstLetter(letter, userId)
             mealsByLetterLiveData.postValue(meals)
         }
     }
 
     fun getMealById(id: String) {
         viewModelScope.launch {
-            val meal = repository.getMealById(id)
+            val meal = repository.getMealById(id, userId)
             meal?.let {
-                val savedMeal = repository.getSavedMealById(id)
+                val savedMeal = repository.getSavedMealById(id, userId)
                 if (savedMeal != null) {
                     it.isFavorite = true
                 }
@@ -64,10 +67,10 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
 
     fun searchMeals(name: String) {
         viewModelScope.launch {
-            val meals = repository.searchMealsByName(name)
+            val meals = repository.searchMealsByName(name, userId)
 
             meals.forEach { meal ->
-                val savedMeal = repository.getSavedMealById(meal.idMeal ?: "")
+                val savedMeal = repository.getSavedMealById(meal.idMeal ?: "", userId)
                 if (savedMeal != null) {
                     meal.isFavorite = true
                 }
@@ -75,7 +78,6 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
             mealsByNameLiveData.postValue(meals)
         }
     }
-
 
     fun fetchCategories() = viewModelScope.launch {
         categoriesLiveData.postValue(repository.listCategories())
@@ -104,7 +106,7 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
     fun getAllLocalMeals() {
         viewModelScope.launch {
             if (_allLocalMealsLiveData == null) {
-                _allLocalMealsLiveData = repository.getAllMeals()
+                _allLocalMealsLiveData = repository.getAllMeals(userId)
                 _allLocalMealsLiveData!!.observeForever { meals ->
                     allLocalMealsLiveData.postValue(meals)
                 }
@@ -114,31 +116,32 @@ class MealViewModel(private val repository: MealRepository) : ViewModel() {
 
     private fun refreshLocalMeals() {
         viewModelScope.launch {
-            val meals = repository.getAllMeals()
+            val meals = repository.getAllMeals(userId)
             meals.observeForever { mealsList ->
                 allLocalMealsLiveData.postValue(mealsList)
             }
         }
     }
 
-    fun toggleMeal(meal: Meal) {
+    fun toggleMeal(meal: Meal, uid: String) {
         viewModelScope.launch {
-            val savedMeal = repository.getSavedMealById(meal.idMeal ?: "")
+            val savedMeal = repository.getSavedMealById(meal.idMeal ?: "", uid)
             if (savedMeal == null) {
                 meal.isFavorite = true
-                repository.insertMeal(meal)
+                repository.insertMeal(meal, uid)
                 _messageLiveData.postValue("${meal.strMeal} added to favorite")
             } else {
-                repository.deleteMeal(savedMeal)
+                repository.deleteMeal(savedMeal, uid)
                 meal.isFavorite = false
                 _messageLiveData.postValue("${meal.strMeal} removed from favorite")
             }
         }
     }
 
+
     fun getLocalMealById(mealId: String) {
         viewModelScope.launch {
-            val meal = repository.getSavedMealById(mealId)
+            val meal = repository.getSavedMealById(mealId, userId)
             meal?.let {
                 localMealByIdLiveData.postValue(it)
             }

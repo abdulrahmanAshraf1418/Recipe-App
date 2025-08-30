@@ -12,26 +12,26 @@ class MealRepository(
     private val localDataSource: LocalDataSource
 ) {
 
-    suspend fun getRandomMeal(): Meal? {
+    suspend fun getRandomMeal(userId: String): Meal? {
         val meal = remoteDataSource.getRandomMeal().meals?.firstOrNull()
         meal?.let {
-            it.isFavorite = localDataSource.isMealFavorite(it.idMeal)
+            it.isFavorite = localDataSource.isMealFavorite(it.idMeal, userId)
         }
         return meal
     }
 
-    suspend fun getMealsByFirstLetter(letter: String): List<Meal> {
+    suspend fun getMealsByFirstLetter(letter: String, userId: String): List<Meal> {
         val meals = remoteDataSource.getMealsByFirstLetter(letter).meals ?: emptyList()
         return meals.map { meal ->
-            meal?.isFavorite = localDataSource.isMealFavorite(meal.idMeal)
+            meal?.isFavorite = localDataSource.isMealFavorite(meal.idMeal, userId)
             meal as Meal
         }
     }
 
-    suspend fun searchMealsByName(name: String): List<Meal> {
+    suspend fun searchMealsByName(name: String, userId: String): List<Meal> {
         val meals = remoteDataSource.searchMealsByName(name).meals ?: emptyList()
         return meals.map { meal ->
-            meal?.isFavorite = localDataSource.isMealFavorite(meal.idMeal)
+            meal?.isFavorite = localDataSource.isMealFavorite(meal.idMeal, userId)
             meal as Meal
         }
     }
@@ -54,24 +54,27 @@ class MealRepository(
     suspend fun getMealsByIngredient(ingredient: String): List<MealItem> =
         remoteDataSource.filterByIngredient(ingredient).meals ?: emptyList()
 
-    suspend fun getMealById(id: String): Meal? {
+    suspend fun getMealById(id: String, userId: String): Meal? {
         val apiMeal = remoteDataSource.getMealById(id).meals?.firstOrNull()
-        apiMeal?.isFavorite = localDataSource.isMealFavorite(id)
+        apiMeal?.isFavorite = localDataSource.isMealFavorite(id, userId)
         return apiMeal
     }
 
-    suspend fun insertMeal(meal: Meal) = localDataSource.insert(meal)
+    suspend fun insertMeal(meal: Meal, userId: String) =
+        localDataSource.insert(meal, userId)
 
-    suspend fun deleteMeal(meal: Meal) = localDataSource.delete(meal)
+    suspend fun deleteMeal(meal: Meal, userId: String) =
+        localDataSource.delete(meal, userId)
 
-    suspend fun getAllMeals(): LiveData<List<Meal>> {
-        return localDataSource.listAll().map { meals ->
+    suspend fun getAllMeals(userId: String): LiveData<List<Meal>> {
+        return localDataSource.listAll(userId).map { meals ->
             meals.map { meal ->
-                meal.copy(isFavorite = true)
+                meal.copy(isFavorite = true) // لأن أي Meal راجع من local معناه مفضل
             }
         }
     }
-    suspend fun getSavedMealById(id: String): Meal? {
-        return localDataSource.getLocalMealById(id)
+
+    suspend fun getSavedMealById(id: String, userId: String): Meal? {
+        return localDataSource.getLocalMealById(id, userId)
     }
 }

@@ -16,12 +16,14 @@ import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
+import com.google.firebase.auth.FirebaseAuth
 
 class MealsFragment : Fragment() {
 
     private lateinit var viewModel: MealViewModel
     private lateinit var recycler: RecyclerView
     private lateinit var adapter: MealsFilterAdapter
+    private lateinit var userId: String
 
     private var filterType: String? = null
     private var filterValue: String? = null
@@ -33,8 +35,9 @@ class MealsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
         val repo = MealRepository(MealRemoteDataSourceImpl(RetrofitInstance.api),LocalDataSourceImpl(requireContext()))
-        viewModel = ViewModelProvider(this, MealViewModelFactory(repo))[MealViewModel::class.java]
+        viewModel = ViewModelProvider(this, MealViewModelFactory(repo, userId))[MealViewModel::class.java]
 
         recycler = view.findViewById(R.id.recyclerViewMeals)
         adapter = MealsFilterAdapter(

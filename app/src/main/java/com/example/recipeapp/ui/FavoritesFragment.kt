@@ -20,6 +20,7 @@ import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 
 class FavoritesFragment : Fragment() {
 
@@ -28,11 +29,10 @@ class FavoritesFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var emptyTextView: TextView
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_favorites, container, false)
 
         recyclerView = view.findViewById(R.id.favRecyclerView)
@@ -41,10 +41,10 @@ class FavoritesFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         favAdapter = FavoriteAdapter(
             onMealClick = { mealId ->
-                val action = FavoritesFragmentDirections.actionFavoritesFragmentToDetailsFragment(mealId)
+                val action = FavoritesFragmentDirections
+                    .actionFavoritesFragmentToDetailsFragment(mealId)
                 findNavController().navigate(action)
-                          },
-
+            },
             onFavoriteClick = { meal ->
                 requireContext().showConfirmDialog(
                     title = "Remove Favorite",
@@ -52,15 +52,18 @@ class FavoritesFragment : Fragment() {
                     positiveText = "Yes",
                     negativeText = "Cancel",
                     onConfirm = {
-                        viewModel.toggleMeal(meal)
+                        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@showConfirmDialog
+
+                        viewModel.toggleMeal(meal, uid)
                         meal.isFavorite = false
                         favAdapter.notifyDataSetChanged()
 
-                        Snackbar.make(requireView(),
+                        Snackbar.make(
+                            requireView(),
                             "${meal.strMeal} removed from favorites",
                             Snackbar.LENGTH_LONG
                         ).setAction("Undo") {
-                            viewModel.toggleMeal(meal)
+                            viewModel.toggleMeal(meal, uid)
                             meal.isFavorite = true
                             favAdapter.notifyDataSetChanged()
                         }.show()
@@ -71,12 +74,25 @@ class FavoritesFragment : Fragment() {
 
         recyclerView.adapter = favAdapter
 
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // ✅ اضبط الـ Repository
         val remoteDataSource = MealRemoteDataSourceImpl(RetrofitInstance.api)
         val localDataSource = LocalDataSourceImpl(requireContext())
         val repository = MealRepository(remoteDataSource, localDataSource)
-        val factory = MealViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory).get(MealViewModel::class.java)
 
+        // ✅ هات الـ userId من FirebaseAuth
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        // ✅ مرر الـ userId للـ Factory
+        val factory = MealViewModelFactory(repository, userId)
+        viewModel = ViewModelProvider(this, factory)[MealViewModel::class.java]
+
+        // ✅ Observe هنا
         viewModel.allLocalMealsLiveData.observe(viewLifecycleOwner) { meals ->
             if (meals.isNullOrEmpty()) {
                 recyclerView.visibility = View.GONE
@@ -86,13 +102,9 @@ class FavoritesFragment : Fragment() {
                 emptyTextView.visibility = View.GONE
                 favAdapter.setMeals(meals)
             }
-
         }
-        return view
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        // ✅ Call هنا
         viewModel.getAllLocalMeals()
     }
 }

@@ -32,6 +32,7 @@ import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeFragment : Fragment() {
 
@@ -49,10 +50,12 @@ class HomeFragment : Fragment() {
     private lateinit var viewModel: MealViewModel
     private lateinit var mealFavoriteIcon: ImageButton
     private lateinit var lottieAnim : LottieAnimationView
-
     private lateinit var progressBar: ProgressBar
 
-
+    // هنا نجيب اليوزر الحالي
+    private val userId: String? by lazy {
+        FirebaseAuth.getInstance().currentUser?.uid
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,62 +81,62 @@ class HomeFragment : Fragment() {
         progressBar = view.findViewById(R.id.progressBarHome)
         lottieAnim = view.findViewById(R.id.imageLoadingAnimation)
 
-
         mealsAdapter = MealsAdapter(
             onMealClick = { mealId ->
                 val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(mealId)
                 findNavController().navigate(action)
             },
             onFavoriteClick = { meal ->
-                viewModel.toggleMeal(meal)
-                meal.isFavorite = !meal.isFavorite
+                userId?.let { uid ->
+                    viewModel.toggleMeal(meal, uid)
+                    meal.isFavorite = !meal.isFavorite
+                }
             },
             onFavoriteRequest = { meal, position ->
                 checkGuestAction {
-                    if (meal.isFavorite) {
-                        requireContext().showConfirmDialog(
-                            title = "Remove Favorite",
-                            message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
-                            onConfirm = {
-                                viewModel.toggleMeal(meal)
-                                meal.isFavorite = false
-                                mealsAdapter.notifyItemChanged(position)
+                    userId?.let { uid ->
+                        if (meal.isFavorite) {
+                            requireContext().showConfirmDialog(
+                                title = "Remove Favorite",
+                                message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                                onConfirm = {
+                                    viewModel.toggleMeal(meal, uid)
+                                    meal.isFavorite = false
+                                    mealsAdapter.notifyItemChanged(position)
 
-                                Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
-                                    .setAction("Undo") {
-                                        viewModel.toggleMeal(meal)
-                                        meal.isFavorite = true
-                                        mealsAdapter.notifyItemChanged(position)
-                                    }
-                                    .show()
-                            }
-                        )
-                    } else {
-                        viewModel.toggleMeal(meal)
-                        meal.isFavorite = true
-                        mealsAdapter.notifyItemChanged(position)
+                                    Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
+                                        .setAction("Undo") {
+                                            viewModel.toggleMeal(meal, uid)
+                                            meal.isFavorite = true
+                                            mealsAdapter.notifyItemChanged(position)
+                                        }
+                                        .show()
+                                }
+                            )
+                        } else {
+                            viewModel.toggleMeal(meal, uid)
+                            meal.isFavorite = true
+                            mealsAdapter.notifyItemChanged(position)
 
-                        Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
-                            .setAction("Undo") {
-                                viewModel.toggleMeal(meal)
-                                meal.isFavorite = false
-                                mealsAdapter.notifyItemChanged(position)
-                            }
-                            .show()
+                            Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
+                                .setAction("Undo") {
+                                    viewModel.toggleMeal(meal, uid)
+                                    meal.isFavorite = false
+                                    mealsAdapter.notifyItemChanged(position)
+                                }
+                                .show()
+                        }
                     }
                 }
             }
-
         )
-
 
         val remoteDataSource: MealRemoteDataSource = MealRemoteDataSourceImpl(RetrofitInstance.api)
         val repository = MealRepository(remoteDataSource, LocalDataSourceImpl(requireContext()))
-        val factory = MealViewModelFactory(repository)
+        val factory = MealViewModelFactory(repository, userId.toString())
         viewModel = ViewModelProvider(this, factory).get(MealViewModel::class.java)
 
         setupObservers(view)
-
         loadData()
 
         swipeRefreshLayout.setOnRefreshListener {
@@ -147,6 +150,7 @@ class HomeFragment : Fragment() {
             randomMealName.text = meal.strMeal
             randomMealCategory.text = "Category: ${meal.strCategory}"
             randomMealArea.text = "Area: ${meal.strArea}"
+
             Glide.with(this)
                 .load(meal.strMealThumb)
                 .listener(object : com.bumptech.glide.request.RequestListener<Drawable> {
@@ -180,42 +184,41 @@ class HomeFragment : Fragment() {
             }
 
             mealFavoriteIcon.setOnClickListener {
-                checkGuestAction{
-                    if (meal.isFavorite) {
-                        requireContext().showConfirmDialog(
-                            title = "Remove Favorite",
-                            message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
-                            onConfirm = {
-                                viewModel.toggleMeal(meal)
-                                meal.isFavorite = false
-                                mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
+                checkGuestAction {
+                    userId?.let { uid ->
+                        if (meal.isFavorite) {
+                            requireContext().showConfirmDialog(
+                                title = "Remove Favorite",
+                                message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
+                                onConfirm = {
+                                    viewModel.toggleMeal(meal, uid)
+                                    meal.isFavorite = false
+                                    mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
 
-                                Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_SHORT)
-                                    .setAction("Undo") {
-                                        viewModel.toggleMeal(meal)
-                                        meal.isFavorite = true
-                                        mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
-                                    }
-                                    .show()
-                            }
-                        )
-                    } else {
-                        viewModel.toggleMeal(meal)
-                        meal.isFavorite = true
-                        mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
+                                    Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_SHORT)
+                                        .setAction("Undo") {
+                                            viewModel.toggleMeal(meal, uid)
+                                            meal.isFavorite = true
+                                            mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
+                                        }
+                                        .show()
+                                }
+                            )
+                        } else {
+                            viewModel.toggleMeal(meal, uid)
+                            meal.isFavorite = true
+                            mealFavoriteIcon.setImageResource(R.drawable.heart_fill)
 
-                        Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_SHORT)
-                            .setAction("Undo") {
-                                viewModel.toggleMeal(meal)
-                                meal.isFavorite = false
-                                mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
-                            }.show()
+                            Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_SHORT)
+                                .setAction("Undo") {
+                                    viewModel.toggleMeal(meal, uid)
+                                    meal.isFavorite = false
+                                    mealFavoriteIcon.setImageResource(R.drawable.heart_outline)
+                                }.show()
+                        }
                     }
                 }
             }
-
-
-
 
             view.findViewById<View>(R.id.meal_image).setOnClickListener {
                 val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(meal.idMeal)
@@ -242,7 +245,6 @@ class HomeFragment : Fragment() {
             swipeRefreshLayout.isRefreshing = true
             viewModel.getRandomMeal()
             viewModel.getMealsByLetter(getRandomLetter())
-
         } else {
             swipeRefreshLayout.isRefreshing = false
             setViewsVisibility(false)

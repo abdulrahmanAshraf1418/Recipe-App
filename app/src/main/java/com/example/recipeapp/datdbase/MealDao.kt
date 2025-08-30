@@ -12,10 +12,11 @@ interface MealDao {
     @Delete
     suspend fun deleteMeal(meal: Meal)
 
-    @Query("SELECT * FROM meals")
-    fun getAllLocalMeals(): LiveData<List<Meal>>
+    // هات المفضلة الخاصة بالمستخدم الحالي
+    @Query("SELECT * FROM meals WHERE userId = :userId")
+    fun getAllLocalMeals(userId: String): LiveData<List<Meal>>
 
-    @Query("SELECT * FROM meals WHERE idMeal = :id LIMIT 1")
-    suspend fun getLocalMealById(id: String): Meal?
-
+    @Query("SELECT * FROM meals WHERE idMeal = :id AND userId = :userId LIMIT 1")
+    suspend fun getLocalMealById(id: String, userId: String): Meal?
 }
+

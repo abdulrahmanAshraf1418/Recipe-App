@@ -32,6 +32,7 @@ import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 
 class DetailsFragment : Fragment() {
 
@@ -49,6 +50,7 @@ class DetailsFragment : Fragment() {
     private lateinit var lottieAnim: LottieAnimationView
     private var isExpanded = false
 
+    private lateinit var userId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,8 +58,12 @@ class DetailsFragment : Fragment() {
         val remoteDataSource = MealRemoteDataSourceImpl(RetrofitInstance.api)
         val localDataSource = LocalDataSourceImpl(requireContext())
         val repository = MealRepository(remoteDataSource, localDataSource)
-        val factory = MealViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory).get(MealViewModel::class.java)
+
+        // ✅ هات uid من FirebaseAuth
+        userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        val factory = MealViewModelFactory(repository, userId)
+        viewModel = ViewModelProvider(this, factory)[MealViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -88,7 +94,6 @@ class DetailsFragment : Fragment() {
         youTubePlayerView = view.findViewById(R.id.youtube_player_view)
         recyclerView = view.findViewById(R.id.recyclerViewIngredients)
         lottieAnim = view.findViewById(R.id.imageLoadingAnimation_Details)
-
     }
 
     private fun setupRecyclerView() {
@@ -99,21 +104,18 @@ class DetailsFragment : Fragment() {
         )
         recyclerView.adapter = IngredientAdapter(emptyList())
     }
+
     private fun observeViewModel() {
         val mealId = arguments?.getString("mealId")
-        if (mealId.isNullOrEmpty()) {
-            return
-        }
+        if (mealId.isNullOrEmpty()) return
 
         if (isNetworkAvailable()) {
             observeOnlineMeal()
             viewModel.getMealById(mealId)
-
         } else {
             observeOfflineMeal()
             viewModel.getLocalMealById(mealId)
         }
-
     }
 
     private fun observeOnlineMeal() {
@@ -145,6 +147,7 @@ class DetailsFragment : Fragment() {
         Name?.text = meal.strMeal
         Area?.text = getString(R.string.area_label, meal.strArea)
         Category?.text = getString(R.string.category_label, meal.strCategory)
+
         mealImage?.let { imageView ->
             Glide.with(this).load(meal.strMealThumb)
                 .listener(object : com.bumptech.glide.request.RequestListener<Drawable> {
@@ -180,26 +183,26 @@ class DetailsFragment : Fragment() {
             YoutubeLabel.visibility = View.GONE
         }
 
-        if (meal.isFavorite) {
-            mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
-        } else {
-            mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
-        }
+        // ✅ تحديث الأيقونة حسب حالة المفضلة
+        mealFavoriteIcon?.setImageResource(
+            if (meal.isFavorite) R.drawable.heart_fill else R.drawable.heart_outline
+        )
 
+        // ✅ كل تعامل مع toggleMeal مربوط بالـ uid
         mealFavoriteIcon?.setOnClickListener {
-            checkGuestAction{
+            checkGuestAction {
                 if (meal.isFavorite) {
                     requireContext().showConfirmDialog(
                         title = "Remove Favorite",
                         message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
                         onConfirm = {
-                            viewModel.toggleMeal(meal)
+                            viewModel.toggleMeal(meal, userId)
                             meal.isFavorite = false
                             mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
 
                             Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_SHORT)
                                 .setAction("Undo") {
-                                    viewModel.toggleMeal(meal)
+                                    viewModel.toggleMeal(meal, userId)
                                     meal.isFavorite = true
                                     mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
                                 }
@@ -207,13 +210,13 @@ class DetailsFragment : Fragment() {
                         }
                     )
                 } else {
-                    viewModel.toggleMeal(meal)
+                    viewModel.toggleMeal(meal, userId)
                     meal.isFavorite = true
                     mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
 
                     Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_SHORT)
                         .setAction("Undo") {
-                            viewModel.toggleMeal(meal)
+                            viewModel.toggleMeal(meal, userId)
                             meal.isFavorite = false
                             mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
                         }.show()
@@ -225,18 +228,14 @@ class DetailsFragment : Fragment() {
     private fun setupIngredients(meal: Meal) {
         try {
             val ingredients = meal.getIngredients()
-            if (ingredients.isNotEmpty()) {
-                recyclerView.adapter = IngredientAdapter(ingredients)
-            }
+            recyclerView.adapter = IngredientAdapter(ingredients)
         } catch (e: Exception) {
             recyclerView.adapter = IngredientAdapter(emptyList())
         }
     }
 
     private fun setupClickListeners() {
-        btnMore?.setOnClickListener {
-            toggleDescription()
-        }
+        btnMore?.setOnClickListener { toggleDescription() }
     }
 
     private fun toggleDescription() {
@@ -252,7 +251,6 @@ class DetailsFragment : Fragment() {
 
     private fun Meal.getIngredients(): List<Ingredient> {
         val ingredients = mutableListOf<Ingredient>()
-
         val ingredientFields = listOf(
             strIngredient1 to strMeasure1,
             strIngredient2 to strMeasure2,
@@ -288,14 +286,12 @@ class DetailsFragment : Fragment() {
                 )
             }
         }
-
         return ingredients
     }
 
     private fun setupYouTubeVideo(youtubeUrl: String?) {
         youtubeUrl?.let { url ->
             val videoId = extractVideoId(url)
-
             youTubePlayerView?.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
                 override fun onReady(youTubePlayer: YouTubePlayer) {
                     if (videoId.isNotEmpty()) {
@@ -328,4 +324,5 @@ class DetailsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         youTubePlayerView?.release()
-    }}
+    }
+}

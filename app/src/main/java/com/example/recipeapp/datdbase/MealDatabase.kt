@@ -6,27 +6,29 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.recipeapp.models.Meal
 
-@Database(entities = [Meal::class], version = 2)
+@Database(entities = [Meal::class], version = 3, exportSchema = false)
 abstract class MealDatabase : RoomDatabase() {
 
     abstract fun mealDao(): MealDao
 
     companion object {
         @Volatile
-        private var INSTANCE: MealDatabase? = null
+        private var instance: MealDatabase? = null
 
         fun getInstance(context: Context): MealDatabase {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
-                    context.applicationContext,
-                    MealDatabase::class.java,
-                    "meal_database"
-                )
-                    .build()
-                    .also { createdinstance ->
-                    INSTANCE = createdinstance
-                    }
+            return instance ?: synchronized(this) {
+                instance ?: buildDatabase(context).also { instance = it }
             }
+        }
+
+        private fun buildDatabase(context: Context): MealDatabase {
+            return Room.databaseBuilder(
+                context.applicationContext,
+                MealDatabase::class.java,
+                "meal_database"
+            )
+                .fallbackToDestructiveMigration()
+                .build()
         }
     }
 }

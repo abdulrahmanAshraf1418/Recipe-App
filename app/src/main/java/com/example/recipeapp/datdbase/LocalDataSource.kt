@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import com.example.recipeapp.models.Meal
 
 interface LocalDataSource {
-    suspend fun insert (meal: Meal)
-    suspend fun delete (meal: Meal)
-    suspend fun listAll (): LiveData<List<Meal>>
-    suspend fun getLocalMealById(id: String): Meal?
-    suspend fun isMealFavorite(id: String): Boolean
+    suspend fun insert(meal: Meal, userId: String)
+    suspend fun delete(meal: Meal, userId: String)
+    suspend fun isMealFavorite(mealId: String, userId: String): Boolean
+    fun listAll(userId: String): LiveData<List<Meal>>
+    suspend fun getLocalMealById(mealId: String, userId: String): Meal?
 }
+
+

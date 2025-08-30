@@ -27,6 +27,14 @@ class LoginFragment : Fragment() {
     private lateinit var viewModel: AuthViewModel
     private lateinit var auth: FirebaseAuth
 
+    private lateinit var emailEt: EditText
+    private lateinit var passwordEt: EditText
+    private lateinit var loginBtn: Button
+    private lateinit var textRegister: TextView
+    private lateinit var progressLogin: ProgressBar
+    private lateinit var guestBtn: TextView
+    private lateinit var guestRegisterLayout: View // الـ LinearLayout بتاع Guest + Register
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,12 +50,13 @@ class LoginFragment : Fragment() {
 
         auth = FirebaseAuth.getInstance()
 
-        val emailEt = view.findViewById<EditText>(R.id.edit_textEmail)
-        val passwordEt = view.findViewById<EditText>(R.id.edit_textPassword)
-        val loginBtn = view.findViewById<Button>(R.id.btnLogin)
-        val textRegister = view.findViewById<TextView>(R.id.tvRegister)
-        val progressLogin = view.findViewById<ProgressBar>(R.id.progressLogin)
-        val guestBtn = view.findViewById<TextView>(R.id.btn_guest)
+        emailEt = view.findViewById(R.id.edit_textEmail)
+        passwordEt = view.findViewById(R.id.edit_textPassword)
+        loginBtn = view.findViewById(R.id.btnLogin)
+        textRegister = view.findViewById(R.id.tvRegister)
+        progressLogin = view.findViewById(R.id.progressLogin)
+        guestBtn = view.findViewById(R.id.btn_guest)
+        guestRegisterLayout = textRegister.parent as View  // الـ LinearLayout
 
         // ========== Login with Email & Password ==========
         loginBtn.setOnClickListener {
@@ -64,6 +73,7 @@ class LoginFragment : Fragment() {
                     return@setOnClickListener
                 }
                 else -> {
+                    showLoading(true)
                     viewModel.login(email, password)
                 }
             }
@@ -71,14 +81,10 @@ class LoginFragment : Fragment() {
 
         // ========== Login as Guest ==========
         guestBtn.setOnClickListener {
-            progressLogin.visibility = View.VISIBLE
-            loginBtn.visibility = View.GONE
-
+            showLoading(true)
             auth.signInAnonymously()
                 .addOnCompleteListener(requireActivity()) { task ->
-                    progressLogin.visibility = View.GONE
-                    loginBtn.visibility = View.VISIBLE
-
+                    showLoading(false)
                     if (task.isSuccessful) {
                         SnackbarUtils.showSnackbar(view, "Welcome Guest!", true)
                         startActivity(Intent(requireContext(), RecipeActivity::class.java))
@@ -92,20 +98,15 @@ class LoginFragment : Fragment() {
         // ========== Observe ViewModel ==========
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is AuthUiState.Loading -> {
-                    loginBtn.visibility = View.GONE
-                    progressLogin.visibility = View.VISIBLE
-                }
+                is AuthUiState.Loading -> showLoading(true)
                 is AuthUiState.Success -> {
-                    loginBtn.visibility = View.VISIBLE
-                    progressLogin.visibility = View.GONE
+                    showLoading(false)
                     viewModel.resetState()
                     startActivity(Intent(requireContext(), RecipeActivity::class.java))
                     requireActivity().finish()
                 }
                 is AuthUiState.Error -> {
-                    loginBtn.visibility = View.VISIBLE
-                    progressLogin.visibility = View.GONE
+                    showLoading(false)
                     SnackbarUtils.showSnackbar(view, state.message, false)
                     viewModel.resetState()
                 }
@@ -118,4 +119,17 @@ class LoginFragment : Fragment() {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
     }
+
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            progressLogin.visibility = View.VISIBLE
+            loginBtn.visibility = View.GONE
+            guestRegisterLayout.visibility = View.GONE
+        } else {
+            progressLogin.visibility = View.GONE
+            loginBtn.visibility = View.VISIBLE
+            guestRegisterLayout.visibility = View.VISIBLE
+        }
+    }
 }
+
