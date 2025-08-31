@@ -26,6 +26,7 @@ import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
 import com.example.recipeapp.utils.checkGuestAction
 import com.example.recipeapp.utils.showConfirmDialog
+import com.example.recipeapp.utils.showStyledSnackBar
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -98,12 +99,6 @@ class SearchFragment : Fragment() {
                     .actionSearchFragmentToDetailsFragment(meal.idMeal)
                 findNavController().navigate(action)
             },
-            onFavoriteClick = { meal ->
-                currentUid?.let { uid ->
-                    viewModel.toggleMeal(meal, uid)
-                    meal.isFavorite = !meal.isFavorite
-                }
-            },
             onFavoriteRequest = { meal, position ->
                 checkGuestAction {
                     currentUid?.let { uid ->
@@ -116,13 +111,14 @@ class SearchFragment : Fragment() {
                                     meal.isFavorite = false
                                     mealSearchAdapter.notifyItemChanged(position)
 
-                                    Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_LONG)
-                                        .setAction("Undo") {
-                                            viewModel.toggleMeal(meal, uid)
-                                            meal.isFavorite = true
-                                            mealSearchAdapter.notifyItemChanged(position)
-                                        }
-                                        .show()
+                                    requireView().showStyledSnackBar(
+                                        message = "${meal.strMeal} removed from favorites",
+                                        actionText = "Undo"
+                                    ) {
+                                        viewModel.toggleMeal(meal, uid)
+                                        meal.isFavorite = true
+                                        mealSearchAdapter.notifyItemChanged(position)
+                                    }
                                 }
                             )
                         } else {
@@ -130,17 +126,19 @@ class SearchFragment : Fragment() {
                             meal.isFavorite = true
                             mealSearchAdapter.notifyItemChanged(position)
 
-                            Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_LONG)
-                                .setAction("Undo") {
-                                    viewModel.toggleMeal(meal, uid)
-                                    meal.isFavorite = false
-                                    mealSearchAdapter.notifyItemChanged(position)
-                                }
-                                .show()
+                            requireView().showStyledSnackBar(
+                                message = "${meal.strMeal} added to favorites",
+                                actionText = "Undo"
+                            ) {
+                                viewModel.toggleMeal(meal, uid)
+                                meal.isFavorite = false
+                                mealSearchAdapter.notifyItemChanged(position)
+                            }
                         }
                     }
                 }
             }
+
         )
 
         recycler.adapter = simpleAdapter

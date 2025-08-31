@@ -11,7 +11,8 @@ fun Context.showConfirmDialog(
     message: String,
     positiveText: String = "Yes",
     negativeText: String = "Cancel",
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    onCancel: (() -> Unit)? = null
 ) {
     val dialog = MaterialAlertDialogBuilder(this)
         .setTitle(title)
@@ -22,6 +23,7 @@ fun Context.showConfirmDialog(
         }
         .setNegativeButton(negativeText) { d, _ ->
             d.dismiss()
+            onCancel?.invoke()
         }
         .show()
 
@@ -35,3 +37,4 @@ fun Context.showConfirmDialog(
         setAllCaps(false)
     }
 }
+

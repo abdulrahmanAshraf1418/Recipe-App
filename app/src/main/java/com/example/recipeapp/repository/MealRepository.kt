@@ -69,7 +69,7 @@ class MealRepository(
     suspend fun getAllMeals(userId: String): LiveData<List<Meal>> {
         return localDataSource.listAll(userId).map { meals ->
             meals.map { meal ->
-                meal.copy(isFavorite = true) // لأن أي Meal راجع من local معناه مفضل
+                meal.copy(isFavorite = true)
             }
         }
     }

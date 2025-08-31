@@ -1,9 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4E1E1"
+    android:background="#FFFFFF"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -11,7 +10,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- CardView -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardMeal"
             android:layout_width="0dp"
@@ -23,12 +21,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- جوه الكارت بتاع الوجبة -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <!-- Meal Image -->
                 <FrameLayout
                     android:id="@+id/meal_frame"
                     android:layout_width="match_parent"
@@ -52,7 +48,6 @@
                         android:scaleType="centerCrop" />
                 </FrameLayout>
 
-                <!-- Meal Name -->
                 <TextView
                     android:id="@+id/MealName"
                     android:layout_width="0dp"
@@ -68,7 +63,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/meal_frame" />
 
-                <!-- Favorite Button -->
                 <ImageButton
                     android:id="@+id/btnFavorite"
                     android:layout_width="48dp"
@@ -79,7 +73,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/MealName" />
 
-                <!-- Category -->
                 <TextView
                     android:id="@+id/MealCategory"
                     android:layout_width="wrap_content"
@@ -93,7 +86,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/MealName" />
 
-                <!-- Area -->
                 <TextView
                     android:id="@+id/MealArea"
                     android:layout_width="wrap_content"
@@ -111,7 +103,6 @@
         </androidx.cardview.widget.CardView>
 
 
-        <!-- كارت المكونات -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardIngredients"
             android:layout_width="0dp"
@@ -128,7 +119,6 @@
                 android:layout_height="wrap_content"
                 android:padding="12dp">
 
-                <!-- Title -->
                 <TextView
                     android:id="@+id/ingredientsTitle"
                     android:layout_width="0dp"
@@ -142,7 +132,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- RecyclerView -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerViewIngredients"
                     android:layout_width="0dp"
@@ -155,7 +144,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
-        <!-- Meal Details -->
+
         <TextView
             android:id="@+id/details"
             android:layout_width="0dp"
@@ -169,8 +158,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardIngredients" />
 
-        <!-- Show more button -->
-
         <TextView
             android:id="@+id/btn_more"
             android:layout_width="wrap_content"
@@ -183,7 +170,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details" />
 
-        <!-- Youtube title -->
         <TextView
             android:id="@+id/youtube_label"
             android:layout_width="0dp"
@@ -198,7 +184,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_more" />
 
-        <!-- Youtube player -->
         <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
             android:id="@+id/youtube_player_view"
             android:layout_width="0dp"

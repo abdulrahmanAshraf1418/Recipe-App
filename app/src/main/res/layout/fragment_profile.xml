@@ -6,7 +6,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#F4E1E1">
+    android:background="#FFFFFF">
 
     <TextView
         android:id="@+id/tvGreeting"
@@ -47,7 +47,6 @@
         android:layout_width="match_parent"
         android:layout_height="150dp">
 
-        <!-- Guest Login Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/guest_buttons"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -63,7 +62,6 @@
             app:strokeWidth="2dp"
             app:textAllCaps="false" />
 
-        <!-- User Buttons Layout -->
         <LinearLayout
             android:id="@+id/User_buttons"
             android:layout_width="match_parent"

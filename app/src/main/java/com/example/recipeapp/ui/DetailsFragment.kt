@@ -29,6 +29,7 @@ import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
 import com.example.recipeapp.utils.checkGuestAction
 import com.example.recipeapp.utils.showConfirmDialog
+import com.example.recipeapp.utils.showStyledSnackBar
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -59,7 +60,6 @@ class DetailsFragment : Fragment() {
         val localDataSource = LocalDataSourceImpl(requireContext())
         val repository = MealRepository(remoteDataSource, localDataSource)
 
-        // ✅ هات uid من FirebaseAuth
         userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
         val factory = MealViewModelFactory(repository, userId)
@@ -183,12 +183,10 @@ class DetailsFragment : Fragment() {
             YoutubeLabel.visibility = View.GONE
         }
 
-        // ✅ تحديث الأيقونة حسب حالة المفضلة
         mealFavoriteIcon?.setImageResource(
             if (meal.isFavorite) R.drawable.heart_fill else R.drawable.heart_outline
         )
 
-        // ✅ كل تعامل مع toggleMeal مربوط بالـ uid
         mealFavoriteIcon?.setOnClickListener {
             checkGuestAction {
                 if (meal.isFavorite) {
@@ -200,13 +198,14 @@ class DetailsFragment : Fragment() {
                             meal.isFavorite = false
                             mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
 
-                            Snackbar.make(requireView(), "${meal.strMeal} removed from favorites", Snackbar.LENGTH_SHORT)
-                                .setAction("Undo") {
-                                    viewModel.toggleMeal(meal, userId)
-                                    meal.isFavorite = true
-                                    mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
-                                }
-                                .show()
+                            requireView().showStyledSnackBar(
+                                message = "${meal.strMeal} removed from favorites",
+                                actionText = "Undo"
+                            ) {
+                                viewModel.toggleMeal(meal, userId)
+                                meal.isFavorite = true
+                                mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
+                            }
                         }
                     )
                 } else {
@@ -214,12 +213,14 @@ class DetailsFragment : Fragment() {
                     meal.isFavorite = true
                     mealFavoriteIcon?.setImageResource(R.drawable.heart_fill)
 
-                    Snackbar.make(requireView(), "${meal.strMeal} added to favorites", Snackbar.LENGTH_SHORT)
-                        .setAction("Undo") {
-                            viewModel.toggleMeal(meal, userId)
-                            meal.isFavorite = false
-                            mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
-                        }.show()
+                    requireView().showStyledSnackBar(
+                        message = "${meal.strMeal} added to favorites",
+                        actionText = "Undo"
+                    ) {
+                        viewModel.toggleMeal(meal, userId)
+                        meal.isFavorite = false
+                        mealFavoriteIcon?.setImageResource(R.drawable.heart_outline)
+                    }
                 }
             }
         }

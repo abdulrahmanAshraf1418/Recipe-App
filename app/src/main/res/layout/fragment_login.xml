@@ -119,8 +119,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
 
-
-            <!-- Guest + Register في عمود واحد -->
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="wrap_content"

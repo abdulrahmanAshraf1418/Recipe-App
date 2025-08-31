@@ -33,7 +33,7 @@ class LoginFragment : Fragment() {
     private lateinit var textRegister: TextView
     private lateinit var progressLogin: ProgressBar
     private lateinit var guestBtn: TextView
-    private lateinit var guestRegisterLayout: View // الـ LinearLayout بتاع Guest + Register
+    private lateinit var guestRegisterLayout: View
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,9 +56,8 @@ class LoginFragment : Fragment() {
         textRegister = view.findViewById(R.id.tvRegister)
         progressLogin = view.findViewById(R.id.progressLogin)
         guestBtn = view.findViewById(R.id.btn_guest)
-        guestRegisterLayout = textRegister.parent as View  // الـ LinearLayout
+        guestRegisterLayout = textRegister.parent as View
 
-        // ========== Login with Email & Password ==========
         loginBtn.setOnClickListener {
             val email = emailEt.text.toString().trim()
             val password = passwordEt.text.toString().trim()
@@ -79,7 +78,6 @@ class LoginFragment : Fragment() {
             }
         }
 
-        // ========== Login as Guest ==========
         guestBtn.setOnClickListener {
             showLoading(true)
             auth.signInAnonymously()
@@ -95,7 +93,6 @@ class LoginFragment : Fragment() {
                 }
         }
 
-        // ========== Observe ViewModel ==========
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is AuthUiState.Loading -> showLoading(true)
@@ -114,7 +111,6 @@ class LoginFragment : Fragment() {
             }
         }
 
-        // ========== Go to Register ==========
         textRegister.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }

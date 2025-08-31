@@ -16,7 +16,6 @@ import com.google.android.material.snackbar.Snackbar
 
 class MealSearchAdapter(
     private val onMealClick: (Meal) -> Unit,
-    private val onFavoriteClick: (Meal) -> Unit,
     private val onFavoriteRequest: (meal: Meal, position: Int) -> Unit
 
 ) : RecyclerView.Adapter<MealSearchAdapter.MealViewHolder>() {

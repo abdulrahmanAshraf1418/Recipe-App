@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class MealViewModel(
     private val repository: MealRepository,
-    private val userId: String // 👈 استقبل userId من الـ Activity/Fragment
+    private val userId: String
 ) : ViewModel() {
 
     val randomMealLiveData = MutableLiveData<Meal>()

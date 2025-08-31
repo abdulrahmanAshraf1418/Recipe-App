@@ -18,6 +18,7 @@ import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
 import com.example.recipeapp.utils.showConfirmDialog
+import com.example.recipeapp.utils.showStyledSnackBar
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -59,15 +60,15 @@ class FavoritesFragment : Fragment() {
                         meal.isFavorite = false
                         favAdapter.notifyDataSetChanged()
 
-                        Snackbar.make(
-                            requireView(),
-                            "${meal.strMeal} removed from favorites",
-                            Snackbar.LENGTH_LONG
-                        ).setAction("Undo") {
+                        requireView().showStyledSnackBar(
+                            message = "${meal.strMeal} removed from favorites",
+                            actionText = "Undo"
+                        ) {
                             viewModel.toggleMeal(meal, uid)
                             meal.isFavorite = true
                             favAdapter.notifyDataSetChanged()
-                        }.show()
+                        }
+
                     }
                 )
             }
@@ -90,23 +91,26 @@ class FavoritesFragment : Fragment() {
                 requireContext().showConfirmDialog(
                     title = "Remove Favorite",
                     message = "Are you sure you want to remove ${meal.strMeal} from favorites?",
-                    positiveText = "Yes",
-                    negativeText = "Cancel",
                     onConfirm = {
                         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@showConfirmDialog
                         viewModel.toggleMeal(meal, uid)
                         meal.isFavorite = false
-
                         favAdapter.notifyItemRemoved(position)
 
-                        Snackbar.make(requireView(), "${meal.strMeal} removed", Snackbar.LENGTH_LONG)
-                            .setAction("Undo") {
-                                viewModel.toggleMeal(meal, uid)
-                                meal.isFavorite = true
-                                favAdapter.notifyItemInserted(position)
-                            }
-                                .show()
-                })
+                        requireView().showStyledSnackBar(
+                            message = "${meal.strMeal} removed from favorites",
+                            actionText = "Undo"
+                        ) {
+                            viewModel.toggleMeal(meal, uid)
+                            meal.isFavorite = true
+                            favAdapter.notifyItemInserted(position)
+                        }
+                    },
+                    onCancel = {
+                        favAdapter.notifyItemChanged(position)
+                    }
+                )
+
             }
         })
 
