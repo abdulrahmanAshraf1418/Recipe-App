@@ -3,18 +3,18 @@
 
     <item
         android:id="@+id/homeFragment"
-        android:icon="@drawable/home_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:icon="@drawable/ic_home"
         android:title="Home" />
     <item
         android:id="@+id/favoritesFragment"
-        android:icon="@drawable/favorite_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:icon="@drawable/ic_heart"
         android:title="Favorites" />
     <item
         android:id="@+id/searchFragment"
-        android:icon="@drawable/search_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:icon="@drawable/ic_search"
         android:title="Search" />
     <item
         android:id="@+id/profileFragment"
-        android:icon="@drawable/person_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:icon="@drawable/ic_profile"
         android:title="Profile" />
 </menu>

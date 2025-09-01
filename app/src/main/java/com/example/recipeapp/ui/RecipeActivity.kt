@@ -51,6 +51,7 @@ class RecipeActivity : AppCompatActivity() {
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+        toolbar.setTitleTextAppearance(this, R.style.CustomToolbar)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -91,7 +92,7 @@ class RecipeActivity : AppCompatActivity() {
         }
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment, R.id.favoritesFragment)
+            setOf(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment, R.id.favoritesFragment,R.id.notificationsFragment,R.id.detailsFragment)
         )
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
 
@@ -117,7 +118,6 @@ class RecipeActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.top_app_bar, menu)
 
         if (isGuest) {
-            menu?.findItem(R.id.action_about)?.isVisible = false
             menu?.findItem(R.id.action_signout)?.isVisible = false
         }
 
@@ -140,6 +140,10 @@ class RecipeActivity : AppCompatActivity() {
                 if (!isGuest) {
                     showSignOutDialog()
                 }
+                true
+            }
+            R.id.action_notification ->{
+                findNavController(R.id.nav_host_fragment).navigate(R.id.notificationsFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)
