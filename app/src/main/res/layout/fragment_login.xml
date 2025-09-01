@@ -60,7 +60,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Email"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/black"
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -87,6 +89,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Password"
                     android:inputType="textPassword"
+                    android:textColor="@color/black"
                     android:imeOptions="actionDone" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,7 +103,7 @@
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 app:backgroundTint="@color/primaryColor"
-                app:cornerRadius="12dp"
+                app:cornerRadius="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/passwordLayout" />
@@ -129,8 +132,10 @@
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnLogin">
+                app:layout_constraintTop_toBottomOf="@+id/btnGoogleLogin"
+                app:layout_constraintVertical_bias="0.0">
 
                 <TextView
                     android:id="@+id/btn_guest"
@@ -148,6 +153,26 @@
                     android:text="@string/register_text"
                     android:textSize="14sp" />
             </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoogleLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Login with Google"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_google"
+                app:iconGravity="start"
+                app:iconTint="@null"
+                app:iconPadding="12dp"
+                app:iconSize="24dp"
+                app:backgroundTint="@color/primaryColor"
+                app:cornerRadius="50dp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+                app:layout_constraintEnd_toEndOf="@+id/btnLogin"
+                app:layout_constraintStart_toStartOf="@+id/btnLogin"
+                app:layout_constraintTop_toBottomOf="@id/btnLogin" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

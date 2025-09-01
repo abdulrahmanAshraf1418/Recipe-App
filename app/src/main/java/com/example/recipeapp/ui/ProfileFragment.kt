@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.recipeapp.R
 import com.example.recipeapp.network.AuthRemoteDataSourceImpl
 import com.example.recipeapp.repository.AuthRepository
@@ -19,6 +19,7 @@ import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.viewmodel.AuthViewModel
 import com.example.recipeapp.viewmodel.AuthViewModelFactory
 import com.google.android.material.button.MaterialButton
+import java.util.Calendar
 
 class ProfileFragment : Fragment() {
 
@@ -69,23 +70,44 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showUserUI(userName: String) {
-        tvGreeting.text = "Hello, My Chef"
+        val greeting = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+            in 0..11 -> "Good Morning"
+            in 12..17 -> "Good Afternoon"
+            else -> "Good Evening"
+        }
+        tvGreeting.text = "$greeting, My Chef"
         tvUserName.text = userName
 
         userButtonsLayout.visibility = View.VISIBLE
         guestButtonsLayout.visibility = View.GONE
 
-        profileImage.setImageResource(R.drawable.chef_logo)
+        val currentUser = viewModel.getCurrentUser()
+        val photoUrl = currentUser?.photoUrl
+
+        Glide.with(this)
+            .load(photoUrl ?: R.drawable.chef_logo1)
+            .circleCrop()
+            .into(profileImage)
+
     }
 
+
     private fun showGuestUI() {
-        tvGreeting.text = "Hello, Guest"
+        val greeting = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+            in 0..11 -> "Good Morning"
+            in 12..17 -> "Good Afternoon"
+            else -> "Good Evening"
+        }
+        tvGreeting.text = "$greeting, Guest"
         tvUserName.text = "Please login to access all features"
 
         userButtonsLayout.visibility = View.GONE
         guestButtonsLayout.visibility = View.VISIBLE
 
-        profileImage.setImageResource(R.drawable.chef_logo)
+        Glide.with(this)
+            .load(R.drawable.chef_logo1)
+            .circleCrop()
+            .into(profileImage)
     }
 
     private fun setupClickListeners() {

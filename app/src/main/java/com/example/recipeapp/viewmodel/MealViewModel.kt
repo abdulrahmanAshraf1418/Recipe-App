@@ -21,8 +21,6 @@ class MealViewModel(
     private var _allLocalMealsLiveData: LiveData<List<Meal>>? = null
     val allLocalMealsLiveData = MutableLiveData<List<Meal>>()
     private val _messageLiveData = MutableLiveData<String>()
-    val messageLiveData: LiveData<String> = _messageLiveData
-
     val categoriesLiveData = MutableLiveData<List<String>>()
     val areasLiveData = MutableLiveData<List<String>>()
     val ingredientsLiveData = MutableLiveData<List<String>>()

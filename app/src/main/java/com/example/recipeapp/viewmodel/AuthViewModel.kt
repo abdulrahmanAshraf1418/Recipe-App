@@ -51,21 +51,6 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
-    fun loginAsGuest() {
-        viewModelScope.launch {
-            _authState.value = AuthUiState.Loading
-            try {
-                val user = repository.signInAsGuest()
-                if (user != null) {
-                    _authState.value = AuthUiState.Success(user)
-                } else {
-                    _authState.value = AuthUiState.Error("Guest login failed")
-                }
-            } catch (e: Exception) {
-                _authState.value = AuthUiState.Error(e.message ?: "Guest login failed")
-            }
-        }
-    }
 
     fun logout() {
         repository.logout()

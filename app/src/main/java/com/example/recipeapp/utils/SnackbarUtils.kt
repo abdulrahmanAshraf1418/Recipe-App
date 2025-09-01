@@ -3,6 +3,7 @@ package com.example.recipeapp.utils
 import android.graphics.Color
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
+import androidx.core.graphics.toColorInt
 
 object SnackbarUtils {
 
@@ -11,9 +12,9 @@ object SnackbarUtils {
         snackbar.setTextColor(Color.WHITE)
 
         if (isSuccess) {
-            snackbar.setBackgroundTint(Color.parseColor("#4CAF50"))
+            snackbar.setBackgroundTint("#4CAF50".toColorInt())
         } else {
-            snackbar.setBackgroundTint(Color.parseColor("#F44336"))
+            snackbar.setBackgroundTint("#F44336".toColorInt())
         }
 
         snackbar.show()

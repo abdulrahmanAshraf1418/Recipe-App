@@ -10,6 +10,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -20,7 +22,12 @@ import com.example.recipeapp.utils.SnackbarUtils
 import com.example.recipeapp.viewmodel.AuthUiState
 import com.example.recipeapp.viewmodel.AuthViewModel
 import com.example.recipeapp.viewmodel.AuthViewModelFactory
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginFragment : Fragment() {
 
@@ -34,6 +41,11 @@ class LoginFragment : Fragment() {
     private lateinit var progressLogin: ProgressBar
     private lateinit var guestBtn: TextView
     private lateinit var guestRegisterLayout: View
+    private lateinit var googleBtn : Button
+
+    // Google Sign-in
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,6 +69,25 @@ class LoginFragment : Fragment() {
         progressLogin = view.findViewById(R.id.progressLogin)
         guestBtn = view.findViewById(R.id.btn_guest)
         guestRegisterLayout = textRegister.parent as View
+        googleBtn = view.findViewById(R.id.btnGoogleLogin)
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+
+        googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val data: Intent? = result.data
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(ApiException::class.java)!!
+                firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                showLoading(false)
+                SnackbarUtils.showSnackbar(requireView(), "Google sign in failed: ${e.localizedMessage}", false)
+            }
+        }
 
         loginBtn.setOnClickListener {
             val email = emailEt.text.toString().trim()
@@ -93,6 +124,13 @@ class LoginFragment : Fragment() {
                 }
         }
 
+        // Google button click
+        googleBtn.setOnClickListener {
+            showLoading(true)
+            val signInIntent = googleSignInClient.signInIntent
+            googleSignInLauncher.launch(signInIntent)
+        }
+
         viewModel.authState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is AuthUiState.Loading -> showLoading(true)
@@ -116,6 +154,21 @@ class LoginFragment : Fragment() {
         }
     }
 
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(requireActivity()) { task ->
+                showLoading(false)
+                if (task.isSuccessful) {
+                    SnackbarUtils.showSnackbar(requireView(), "Welcome ${auth.currentUser?.displayName}", true)
+                    startActivity(Intent(requireContext(), RecipeActivity::class.java))
+                    requireActivity().finish()
+                } else {
+                    SnackbarUtils.showSnackbar(requireView(), "Google login failed: ${task.exception?.localizedMessage}", false)
+                }
+            }
+    }
+
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             progressLogin.visibility = View.VISIBLE
@@ -128,4 +181,3 @@ class LoginFragment : Fragment() {
         }
     }
 }
-

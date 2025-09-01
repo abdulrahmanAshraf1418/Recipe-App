@@ -1,27 +1,44 @@
 {
   "project_info": {
-    "project_number": "966508359821",
-    "firebase_url": "https://react-cart-2bba4-default-rtdb.firebaseio.com",
-    "project_id": "react-cart-2bba4",
-    "storage_bucket": "react-cart-2bba4.firebasestorage.app"
+    "project_number": "380955241872",
+    "project_id": "recipe-app-45084",
+    "storage_bucket": "recipe-app-45084.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:966508359821:android:879e670a00505c937172c4",
+        "mobilesdk_app_id": "1:380955241872:android:f445803957ea95c80f9715",
         "android_client_info": {
           "package_name": "com.example.recipeapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "380955241872-tdmlar9fj06elt3pu4gntbtt7rhioqh2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.recipeapp",
+            "certificate_hash": "7739540aa477a0fa1748aaa33f6722850df13aee"
+          }
+        },
+        {
+          "client_id": "380955241872-tvr7abqdfjcbgbv8eag0fioa737je6v5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyA8uJ-IeGVqtYgec63WfBsMNX8FgEMKtjc"
+          "current_key": "AIzaSyAL_wFFfOZTmmWM-smYRObUuncHXsX_avE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380955241872-tvr7abqdfjcbgbv8eag0fioa737je6v5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -65,6 +65,9 @@ dependencies {
     implementation(libs.room.compiler)
     implementation(libs.room.ktx)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.play.services.auth)
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.firebase.messaging)
     kapt(libs.room.compiler)
 }
 

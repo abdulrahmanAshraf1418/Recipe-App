@@ -7,4 +7,10 @@
     <string name="read_less">Read Less</string>
     <string name="area_label">Area: %1$s</string>
     <string name="category_label">Category: %1$s</string>
+    <string name="default_web_client_id">380955241872-tvr7abqdfjcbgbv8eag0fioa737je6v5.apps.googleusercontent.com</string>
+    <string name="register_with_google">Register with Google</string>
+    <string name="register">Register</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="full_name">Full Name</string>
 </resources>

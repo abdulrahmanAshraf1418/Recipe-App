@@ -22,15 +22,16 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutCard"
             android:layout_width="match_parent"
-            android:layout_height="423dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/tvRegisterTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Register"
+                android:text="@string/register"
                 android:textColor="@android:color/black"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -59,7 +60,8 @@
                     android:id="@+id/edit_textName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Full Name"
+                    android:hint="@string/full_name"
+                    android:textColor="@color/black"
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -84,7 +86,8 @@
                     android:id="@+id/edit_textEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email"
+                    android:hint="@string/email"
+                    android:textColor="@color/black"
                     android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,8 +103,8 @@
                 app:boxCornerRadiusTopEnd="15dp"
                 app:boxCornerRadiusTopStart="15dp"
                 app:boxStrokeColor="@color/primaryRed"
-                app:hintTextColor="@color/primaryColor"
                 app:endIconMode="password_toggle"
+                app:hintTextColor="@color/primaryColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/emailLayout">
@@ -110,7 +113,8 @@
                     android:id="@+id/edit_textPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Password"
+                    android:textColor="@color/black"
+                    android:hint="@string/password"
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -120,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
-                android:text="Register"
+                android:text="@string/register"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 app:backgroundTint="@color/primaryColor"
@@ -129,14 +133,35 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/passwordLayout" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoogleRegister"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/register_with_google"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_google"
+                app:iconGravity="start"
+                app:iconTint="@null"
+                app:iconPadding="12dp"
+                app:iconSize="24dp"
+                app:backgroundTint="@color/primaryColor"
+                app:cornerRadius="50dp"
+                app:layout_constraintBottom_toTopOf="@+id/tvLogin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnRegister" />
+
             <ProgressBar
                 android:id="@+id/progressRegister"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:indeterminate="true"
-                android:visibility="gone"
                 android:indeterminateTint="@color/primaryColor"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.512"
                 app:layout_constraintStart_toStartOf="parent"
@@ -146,13 +171,15 @@
                 android:id="@+id/tvLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="92dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/login_text"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/layoutCard"
                 app:layout_constraintHorizontal_bias="0.496"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/passwordLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/btnGoogleRegister" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

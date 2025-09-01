@@ -38,7 +38,7 @@ class AboutFragment : Fragment() {
         btnContact.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "message/rfc822"
-                putExtra(Intent.EXTRA_EMAIL, arrayOf("yusifashraf501@gmail.com"))
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("3bdelr7man.ashraf7@gmail.com"))
                 putExtra(Intent.EXTRA_SUBJECT, "Contact - Recipe App")
                 putExtra(Intent.EXTRA_TEXT, "Hello, I’d like to ask about...")
             }

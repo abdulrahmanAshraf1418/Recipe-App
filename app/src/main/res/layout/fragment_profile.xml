@@ -6,7 +6,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="#FFFFFF">
+    android:background="#FFF2F2">
 
     <TextView
         android:id="@+id/tvGreeting"
@@ -37,7 +37,7 @@
             android:id="@+id/profileImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/chef_logo"
+            android:src="@drawable/chef_logo1"
             android:scaleType="centerCrop"
             android:background="@drawable/circle_border"
             android:padding="4dp"/>
