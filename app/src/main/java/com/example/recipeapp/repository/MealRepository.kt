@@ -6,6 +6,7 @@ import com.example.recipeapp.datdbase.LocalDataSource
 import com.example.recipeapp.models.Meal
 import com.example.recipeapp.models.MealItem
 import com.example.recipeapp.network.MealRemoteDataSource
+import com.example.recipeapp.scheduled.ScheduledMeal
 
 class MealRepository(
     private val remoteDataSource: MealRemoteDataSource,
@@ -66,7 +67,7 @@ class MealRepository(
     suspend fun deleteMeal(meal: Meal, userId: String) =
         localDataSource.delete(meal, userId)
 
-    suspend fun getAllMeals(userId: String): LiveData<List<Meal>> {
+    fun getAllMeals(userId: String): LiveData<List<Meal>> {
         return localDataSource.listAll(userId).map { meals ->
             meals.map { meal ->
                 meal.copy(isFavorite = true)
@@ -77,4 +78,11 @@ class MealRepository(
     suspend fun getSavedMealById(id: String, userId: String): Meal? {
         return localDataSource.getLocalMealById(id, userId)
     }
+
+    fun getAllScheduledMeals() = localDataSource.getAllScheduledMeals()
+
+    suspend fun insertScheduledMeal(meal: ScheduledMeal) = localDataSource.insertScheduledMeal(meal)
+
+    suspend fun deleteScheduledMeal(meal: ScheduledMeal) = localDataSource.deleteScheduledMeal(meal)
+
 }

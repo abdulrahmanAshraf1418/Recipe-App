@@ -1,6 +1,8 @@
 package com.example.recipeapp.ui
 
 import IngredientAdapter
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,12 +12,10 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -27,13 +27,19 @@ import com.example.recipeapp.models.Meal
 import com.example.recipeapp.network.MealRemoteDataSourceImpl
 import com.example.recipeapp.network.RetrofitInstance
 import com.example.recipeapp.repository.MealRepository
+import com.example.recipeapp.scheduled.ScheduledMeal
+import com.example.recipeapp.scheduled.ScheduledMealsViewModel
+import com.example.recipeapp.scheduled.ScheduledMealsViewModelFactory
 import com.example.recipeapp.utils.checkGuestAction
 import com.example.recipeapp.utils.showConfirmDialog
 import com.example.recipeapp.utils.showStyledSnackBar
 import com.example.recipeapp.viewmodel.MealViewModel
 import com.example.recipeapp.viewmodel.MealViewModelFactory
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import java.util.Calendar
 
 class DetailsFragment : Fragment() {
 
@@ -47,8 +53,11 @@ class DetailsFragment : Fragment() {
     private var youTubePlayerView: YouTubePlayerView? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel : MealViewModel
+    private lateinit var scheduleViewModel : ScheduledMealsViewModel
+    private lateinit var btnScheduleMeal : ImageButton
     private lateinit var YoutubeLabel : TextView
     private lateinit var lottieAnim: LottieAnimationView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var isExpanded = false
 
     private lateinit var userId: String
@@ -64,6 +73,10 @@ class DetailsFragment : Fragment() {
 
         val factory = MealViewModelFactory(repository, userId)
         viewModel = ViewModelProvider(this, factory)[MealViewModel::class.java]
+
+        val scheduleFactory = ScheduledMealsViewModelFactory(repository)
+        scheduleViewModel = ViewModelProvider(this, scheduleFactory)[ScheduledMealsViewModel::class.java]
+
     }
 
     override fun onCreateView(
@@ -80,6 +93,7 @@ class DetailsFragment : Fragment() {
         setupRecyclerView()
         observeViewModel()
         setupClickListeners()
+        setupSwipeRefresh()
     }
 
     private fun initViews(view: View) {
@@ -94,6 +108,9 @@ class DetailsFragment : Fragment() {
         youTubePlayerView = view.findViewById(R.id.youtube_player_view)
         recyclerView = view.findViewById(R.id.recyclerViewIngredients)
         lottieAnim = view.findViewById(R.id.imageLoadingAnimation_Details)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayoutDetails)
+        btnScheduleMeal = view.findViewById(R.id.btnScheduleMeal)
+
     }
 
     private fun setupRecyclerView() {
@@ -128,6 +145,7 @@ class DetailsFragment : Fragment() {
                 updateUI(it, isOnline = true)
                 setupYouTubeVideo(it.strYoutube)
                 setupIngredients(it)
+                swipeRefreshLayout.isRefreshing = false
             }
         }
     }
@@ -137,6 +155,7 @@ class DetailsFragment : Fragment() {
             meal?.let {
                 updateUI(it, isOnline = false)
                 setupIngredients(it)
+                swipeRefreshLayout.isRefreshing = false
             }
         }
     }
@@ -230,13 +249,29 @@ class DetailsFragment : Fragment() {
         try {
             val ingredients = meal.getIngredients()
             recyclerView.adapter = IngredientAdapter(ingredients)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             recyclerView.adapter = IngredientAdapter(emptyList())
         }
     }
 
     private fun setupClickListeners() {
         btnMore?.setOnClickListener { toggleDescription() }
+        btnScheduleMeal.setOnClickListener {
+            val meal = viewModel.mealByIdLiveData.value ?: return@setOnClickListener
+            showDateTimePicker { dateTime ->
+                val newScheduledMeal = ScheduledMeal(
+                    mealId = meal.idMeal,
+                    mealName = meal.strMeal ?: "",
+                    mealThumb = meal.strMealThumb ?: "",
+                    dateTime = dateTime
+                )
+                scheduleViewModel.addScheduledMeal(newScheduledMeal)
+
+                requireView().showStyledSnackBar(
+                    message = "${meal.strMeal} scheduled successfully!"
+                )
+            }
+        }
     }
 
     private fun toggleDescription() {
@@ -248,6 +283,21 @@ class DetailsFragment : Fragment() {
             btnMore?.text = getString(R.string.read_less)
         }
         isExpanded = !isExpanded
+    }
+
+    private fun setupSwipeRefresh() {
+        swipeRefreshLayout.setOnRefreshListener {
+            val mealId = arguments?.getString("mealId")
+            if (!mealId.isNullOrEmpty()) {
+                if (isNetworkAvailable()) {
+                    viewModel.getMealById(mealId)
+                } else {
+                    viewModel.getLocalMealById(mealId)
+                }
+            } else {
+                swipeRefreshLayout.isRefreshing = false
+            }
+        }
     }
 
     private fun Meal.getIngredients(): List<Ingredient> {
@@ -310,9 +360,32 @@ class DetailsFragment : Fragment() {
                 url.contains("youtu.be/") -> url.substringAfter("youtu.be/").substringBefore("?")
                 else -> ""
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
+    }
+
+    private fun showDateTimePicker(onDateTimeSelected: (Long) -> Unit) {
+        val calendar = Calendar.getInstance()
+
+        DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                TimePickerDialog(
+                    requireContext(),
+                    { _, hourOfDay, minute ->
+                        calendar.set(year, month, dayOfMonth, hourOfDay, minute)
+                        onDateTimeSelected(calendar.timeInMillis)
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true
+                ).show()
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     private fun isNetworkAvailable(): Boolean {

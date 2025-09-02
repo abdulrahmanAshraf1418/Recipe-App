@@ -1,5 +1,12 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefreshLayoutDetails"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFF2F2"
@@ -50,8 +57,9 @@
 
                 <TextView
                     android:id="@+id/MealName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="283dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="4dp"
                     android:ellipsize="end"
                     android:padding="12dp"
                     android:singleLine="true"
@@ -60,13 +68,14 @@
                     android:textSize="22sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/btnFavorite"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/meal_frame" />
 
                 <ImageButton
                     android:id="@+id/btnFavorite"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="87dp"
+                    android:layout_height="57dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="Add to favorites"
                     app:layout_constraintBottom_toBottomOf="@id/MealName"
@@ -77,7 +86,6 @@
                     android:id="@+id/MealCategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:paddingStart="12dp"
                     android:text="Category"
                     android:textColor="@color/primaryColorDark"
@@ -91,13 +99,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:paddingEnd="12dp"
+                    android:foregroundGravity="left"
+                    android:paddingStart="12dp"
                     android:text="Area"
                     android:textColor="@color/primaryColorDark"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/MealCategory"
+                    app:layout_constraintTop_toBottomOf="@+id/MealCategory" />
+
+                <ImageButton
+                    android:id="@+id/btnScheduleMeal"
+                    android:layout_width="85dp"
+                    android:layout_height="62dp"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/MealName" />
+                    app:layout_constraintStart_toStartOf="@+id/btnFavorite"
+                    app:layout_constraintTop_toBottomOf="@+id/btnFavorite"
+                    app:srcCompat="@drawable/ic_scheduled" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
@@ -196,3 +216,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

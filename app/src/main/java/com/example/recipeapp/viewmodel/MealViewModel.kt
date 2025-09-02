@@ -68,7 +68,7 @@ class MealViewModel(
             val meals = repository.searchMealsByName(name, userId)
 
             meals.forEach { meal ->
-                val savedMeal = repository.getSavedMealById(meal.idMeal ?: "", userId)
+                val savedMeal = repository.getSavedMealById(meal.idMeal, userId)
                 if (savedMeal != null) {
                     meal.isFavorite = true
                 }
@@ -112,18 +112,9 @@ class MealViewModel(
         }
     }
 
-    private fun refreshLocalMeals() {
-        viewModelScope.launch {
-            val meals = repository.getAllMeals(userId)
-            meals.observeForever { mealsList ->
-                allLocalMealsLiveData.postValue(mealsList)
-            }
-        }
-    }
-
     fun toggleMeal(meal: Meal, uid: String) {
         viewModelScope.launch {
-            val savedMeal = repository.getSavedMealById(meal.idMeal ?: "", uid)
+            val savedMeal = repository.getSavedMealById(meal.idMeal, uid)
             if (savedMeal == null) {
                 meal.isFavorite = true
                 repository.insertMeal(meal, uid)

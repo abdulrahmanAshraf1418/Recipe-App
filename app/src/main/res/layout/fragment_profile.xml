@@ -45,7 +45,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/guest_buttons"
@@ -90,6 +90,17 @@
                 android:backgroundTint="@color/primaryRed"
                 android:padding="12dp"
                 android:text="Logout"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/scheduled_meal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/primaryRed"
+                android:padding="12dp"
+                android:text="Scheduled Meals"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
         </LinearLayout>

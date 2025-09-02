@@ -25,7 +25,6 @@ import com.example.recipeapp.viewmodel.AuthViewModelFactory
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import androidx.core.view.isVisible
 
 class RecipeActivity : AppCompatActivity() {
@@ -92,7 +91,7 @@ class RecipeActivity : AppCompatActivity() {
         }
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment, R.id.favoritesFragment,R.id.notificationsFragment,R.id.detailsFragment)
+            setOf(R.id.homeFragment, R.id.searchFragment, R.id.profileFragment, R.id.favoritesFragment,R.id.notificationsFragment,R.id.detailsFragment,R.id.scheduledMealsFragment)
         )
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration)
 

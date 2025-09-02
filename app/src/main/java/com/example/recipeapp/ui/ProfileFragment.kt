@@ -33,6 +33,8 @@ class ProfileFragment : Fragment() {
     private lateinit var userButtonsLayout: View
     private lateinit var guestButtonsLayout: View
 
+    private lateinit var btnScheduled: Button
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,6 +53,7 @@ class ProfileFragment : Fragment() {
         profileImage = view.findViewById(R.id.profileImage)
         userButtonsLayout = view.findViewById(R.id.User_buttons)
         guestButtonsLayout = view.findViewById(R.id.guest_buttons)
+        btnScheduled = view.findViewById(R.id.scheduled_meal)
 
         val repo = AuthRepository(AuthRemoteDataSourceImpl())
         viewModel = ViewModelProvider(this, AuthViewModelFactory(repo))[AuthViewModel::class.java]
@@ -122,6 +125,11 @@ class ProfileFragment : Fragment() {
         btnGuestLogin.setOnClickListener {
             viewModel.logout()
             navigateToAuth()
+        }
+
+        btnScheduled.setOnClickListener {
+            val action = ProfileFragmentDirections.actionProfileFragmentToScheduledMealsFragment()
+            findNavController().navigate(action)
         }
     }
 
