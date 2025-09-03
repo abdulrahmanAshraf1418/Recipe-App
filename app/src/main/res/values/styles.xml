@@ -5,10 +5,19 @@
         <item name="subtitleTextColor">@android:color/white</item>
         <item name="navigationIconTint">@android:color/white</item>
         <item name="actionMenuTextColor">@android:color/white</item>
-        <item name="android:textSize">22sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
         <item name="actionButtonStyle">@style/CustomActionButton</item>
     </style>
+
+    <style name="CustomCardShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">100dp</item>
+        <item name="cornerSizeBottomRight">100dp</item>
+    </style>
+
 
     <style name="CustomActionButton" parent="Widget.AppCompat.ActionButton">
         <item name="android:maxWidth">32dp</item>

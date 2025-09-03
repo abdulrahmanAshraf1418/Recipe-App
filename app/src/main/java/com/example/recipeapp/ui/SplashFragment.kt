@@ -37,7 +37,7 @@ class SplashFragment : Fragment() {
                         startActivity(Intent(requireContext(), RecipeActivity::class.java))
                         requireActivity().finish()
                     } else {
-                        findNavController().navigate(R.id.action_splashFragment_to_loginFragment)
+                        findNavController().navigate(R.id.action_splashFragment_to_getStartFragment)
                     }
             }
         })

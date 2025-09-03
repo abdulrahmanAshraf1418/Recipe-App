@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF4B4B"
+    tools:context=".start.GetStartFragment">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:backgroundTint="#FBE2E2"
+        app:cardBackgroundColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent=".78"
+        app:shapeAppearanceOverlay="@style/CustomCardShape">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/start_layout"
+                android:layout_width="match_parent"
+                android:layout_height="389dp">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/chef_animation"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/chef" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/food_app_animation"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="visible"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/food_app" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/food_choice_animation"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/food_choice" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/start_title"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:gravity="center"
+                android:text="Start Title"
+                android:textColor="@color/primaryColorDarker"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/start_description"
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                android:ellipsize="middle"
+                android:gravity="center"
+                android:lines="3"
+                android:singleLine="false"
+                android:text="Start Description"
+                android:textAlignment="center"
+                android:textColor="@color/primaryColorDark"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/btn_Skip"
+        android:layout_width="63dp"
+        android:layout_height="46dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:text="Skip"
+        android:textColor="@color/primaryColorDarker"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/nextButton"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="-49dp"
+        android:background="@drawable/circle_button_bg"
+        android:backgroundTint="#FBE2E2"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_arrow_right"
+        app:layout_constraintEnd_toEndOf="@+id/materialCardView"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@+id/materialCardView"
+        app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bten_start"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="139dp"
+        android:layout_height="67dp"
+        android:text="Get Start"
+        android:textColor="@color/primaryColorDarker"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:backgroundTint="#FBE2E2"
+        app:cornerRadius="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/nextButton"
+        app:layout_constraintStart_toStartOf="@+id/nextButton"
+        app:layout_constraintTop_toBottomOf="@+id/nextButton"
+        app:strokeColor="#FFFFFF"
+        app:strokeWidth="4dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

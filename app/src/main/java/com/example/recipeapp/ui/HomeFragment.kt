@@ -273,7 +273,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun getRandomLetter(): String {
-        val letters = ('a'..'z').filterNot { it in listOf('q', 'x', 'u', 'z', 'y') }
+        val letters = ('a'..'z')
         return letters.random().toString()
     }
 }

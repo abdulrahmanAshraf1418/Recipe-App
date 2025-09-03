@@ -15,7 +15,7 @@ interface MealApi {
 
     @GET("search.php")
     suspend fun getMealsByFirstLetter(
-        @Query("f") letter: String
+        @Query("s") letter: String
     ): MealResponse
 
     @GET("lookup.php")
